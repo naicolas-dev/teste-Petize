@@ -14,8 +14,8 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    // Default language: Portuguese (Brazil)
-    lng: 'pt',
+    // Use local storage or default to Portuguese
+    lng: localStorage.getItem('petize-lng') || 'pt',
     fallbackLng: 'en',
     interpolation: {
       // React already protects from XSS

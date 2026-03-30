@@ -5,6 +5,7 @@ import {
   Flex,
   Text,
   Stack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 
 /** Sort field options as expected by the GitHub API */
@@ -28,6 +29,8 @@ const SORT_OPTIONS = [
  */
 export function SortSelector({ sort, direction, onSortChange, onDirectionChange }) {
   const { t } = useTranslation();
+  const optionBg = useColorModeValue('#FFFFFF', '#0D1117');
+  const optionColor = useColorModeValue('#1F2328', '#E6EDF3');
 
   const isNameSort = sort === 'full_name';
   const directionOptions = [
@@ -36,12 +39,15 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
   ];
 
   const selectStyles = {
-    bg: 'white',
-    borderColor: 'gray.200',
+    bg: '#FFFFFF',
+    borderColor: '#D0D7DE',
+    border: '1px solid',
+    color: '#1F2328',
+    _dark: { bg: '#0D1117', borderColor: '#30363D', color: '#E6EDF3' },
     borderRadius: 'lg',
     fontSize: 'sm',
-    _hover: { borderColor: 'blue.400' },
-    _focus: { borderColor: 'blue.500', boxShadow: '0 0 0 2px rgba(66,153,225,0.25)' },
+    _hover: { borderColor: '#8C959F' },
+    _focus: { borderColor: '#0969DA', boxShadow: '0 0 0 1px #0969DA' },
   };
 
   return (
@@ -49,16 +55,14 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
       align={{ base: 'flex-start', sm: 'center' }}
       gap={4}
       direction={{ base: 'column', sm: 'row' }}
-      bg="gray.50"
-      px={4}
-      py={3}
-      borderRadius="xl"
-      border="1px solid"
-      borderColor="gray.100"
+      bg="transparent"
+      _dark={{ bg: 'transparent' }}
+      pb={4}
+      pt={2}
     >
       {/* Sort field */}
       <Stack direction="row" align="center" spacing={2} flexShrink={0}>
-        <Text fontSize="sm" color="gray.500" fontWeight="medium" whiteSpace="nowrap">
+        <Text fontSize="sm" color="gray.500" _dark={{ color: 'gray.400' }} fontWeight="medium" whiteSpace="nowrap">
           {t('sort.label')}
         </Text>
         <Select
@@ -70,14 +74,16 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
           {...selectStyles}
         >
           {SORT_OPTIONS.map(({ value, labelKey }) => (
-            <option key={value} value={value}>{t(labelKey)}</option>
+            <option key={value} value={value} style={{ background: optionBg, color: optionColor }}>
+              {t(labelKey)}
+            </option>
           ))}
         </Select>
       </Stack>
 
       {/* Direction */}
       <Stack direction="row" align="center" spacing={2} flexShrink={0}>
-        <Text fontSize="sm" color="gray.500" fontWeight="medium" whiteSpace="nowrap">
+        <Text fontSize="sm" color="gray.500" _dark={{ color: 'gray.400' }} fontWeight="medium" whiteSpace="nowrap">
           {t('sort.direction')}
         </Text>
         <Select
@@ -89,7 +95,9 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
           {...selectStyles}
         >
           {directionOptions.map(({ value, labelKey }) => (
-            <option key={value} value={value}>{t(labelKey)}</option>
+            <option key={value} value={value} style={{ background: optionBg, color: optionColor }}>
+              {t(labelKey)}
+            </option>
           ))}
         </Select>
       </Stack>

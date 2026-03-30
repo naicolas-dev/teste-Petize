@@ -10,12 +10,17 @@ const GITHUB_API_BASE = 'https://api.github.com';
  * @returns {Promise<unknown>} - Parsed JSON response
  */
 async function githubFetch(path) {
-  const response = await fetch(`${GITHUB_API_BASE}${path}`, {
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-  });
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+
+  const token = import.meta.env.VITE_GITHUB_TOKEN;
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${GITHUB_API_BASE}${path}`, { headers });
 
   if (!response.ok) {
     // Propagate a structured error with the HTTP status code

@@ -11,6 +11,7 @@ import {
   AlertIcon,
 } from '@chakra-ui/react';
 import { SearchBar } from '../components/SearchBar';
+import { SettingsControls } from '../components/SettingsControls';
 
 /**
  * HomePage — the application's entry point.
@@ -23,40 +24,48 @@ export function HomePage() {
   return (
     <Box
       minH="100vh"
-      bgGradient="linear(to-br, blue.50, white, purple.50)"
+      overflow="hidden"
       display="flex"
       alignItems="center"
       justifyContent="center"
       px={4}
+      position="relative"
     >
+      <Box position="absolute" top={4} right={4}>
+        <SettingsControls />
+      </Box>
       <Container maxW="xl" py={16}>
         <VStack spacing={8} align="center">
 
           {/* Brand mark */}
           <Flex
-            w={16}
-            h={16}
-            bg="blue.600"
-            borderRadius="2xl"
+            h={8}
+            px={4}
+            bg="white"
+            _dark={{ bg: '#21262D', color: '#C9D1D9', borderColor: '#30363D' }}
+            color="gray.600"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="full"
             align="center"
             justify="center"
-            boxShadow="0 8px 24px rgba(66,153,225,0.35)"
-            fontSize="2xl"
-            role="img"
-            aria-label="GitHub logo"
+            fontSize="xs"
+            fontWeight="bold"
+            letterSpacing="wide"
+            boxShadow="sm"
           >
-            🐙
+            Search d_evs
           </Flex>
 
           {/* Hero copy */}
           <VStack spacing={3} textAlign="center">
             <Heading
               as="h1"
-              size="xl"
-              bgGradient="linear(to-r, blue.600, purple.500)"
-              bgClip="text"
-              fontWeight="extrabold"
-              letterSpacing="-0.5px"
+              size="2xl"
+              color="#24292F"
+              _dark={{ color: '#E6EDF3' }}
+              fontWeight="bold"
+              letterSpacing="tight"
             >
               {t('home.title')}
             </Heading>
@@ -69,7 +78,7 @@ export function HomePage() {
           {showEmptyAlert && (
             <Alert
               status="warning"
-              borderRadius="xl"
+              borderRadius="lg"
               w="100%"
               fontSize="sm"
               onMouseLeave={() => setShowEmptyAlert(false)}

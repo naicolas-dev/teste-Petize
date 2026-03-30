@@ -54,25 +54,29 @@ export function RepoCard({ repo }) {
       id={`repo-card-${repo.name}`}
       as="article"
       border="1px solid"
-      borderColor="gray.200"
+      borderColor="#D0D7DE"
+      _dark={{ bg: '#161B22', borderColor: '#30363D' }}
       borderRadius="xl"
       p={{ base: 4, md: 5 }}
-      bg="white"
-      transition="all 0.18s ease"
+      bg="#FFFFFF"
+      transition="all 0.2s cubic-bezier(.08,.52,.52,1)"
+      boxShadow="sm"
       _hover={{
-        borderColor: 'blue.300',
-        boxShadow: '0 4px 16px rgba(66,153,225,0.12)',
-        transform: 'translateY(-1px)',
+        borderColor: '#8C959F',
+        boxShadow: '0 8px 24px rgba(149, 157, 165, 0.2)',
+        transform: 'translateY(-2px)',
+        _dark: { borderColor: '#8B949E', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }
       }}
     >
       {/* Repo name as external link */}
       <Link
         href={repo.html_url}
         isExternal
-        fontWeight="semibold"
-        fontSize="sm"
-        color="blue.600"
-        _hover={{ color: 'blue.800', textDecoration: 'underline' }}
+        fontWeight="bold"
+        fontSize="md"
+        color="#0969DA"
+        _dark={{ color: '#58A6FF' }}
+        _hover={{ textDecoration: 'underline' }}
         display="inline-block"
         mb={repo.description ? 2 : 0}
         wordBreak="break-word"
@@ -82,7 +86,7 @@ export function RepoCard({ repo }) {
 
       {/* Description */}
       {repo.description && (
-        <Text fontSize="sm" color="gray.600" mb={3} noOfLines={2} lineHeight="tall">
+        <Text fontSize="sm" color="gray.600" _dark={{ color: 'gray.400' }} mb={3} noOfLines={2} lineHeight="tall">
           {repo.description}
         </Text>
       )}
@@ -92,14 +96,14 @@ export function RepoCard({ repo }) {
         {repo.language && (
           <HStack spacing={1}>
             <VscCircleFilled color={langColor} size={14} />
-            <Text fontSize="xs" color="gray.500">{repo.language}</Text>
+            <Text fontSize="xs" fontFamily="mono" color="gray.500">{repo.language}</Text>
           </HStack>
         )}
 
         <Tooltip label={t('repo.stars')} placement="top" hasArrow>
           <HStack spacing={1} cursor="default">
             <StarIcon boxSize={3} color="yellow.500" />
-            <Text fontSize="xs" color="gray.500">
+            <Text fontSize="sm" fontFamily="mono" color="gray.600" _dark={{ color: 'gray.400' }}>
               {repo.stargazers_count.toLocaleString()}
             </Text>
           </HStack>
@@ -107,8 +111,8 @@ export function RepoCard({ repo }) {
 
         <Tooltip label={t('repo.forks')} placement="top" hasArrow>
           <HStack spacing={1} cursor="default">
-            <GoRepoForked size={13} color="#718096" />
-            <Text fontSize="xs" color="gray.500">
+            <GoRepoForked size={14} color="#718096" />
+            <Text fontSize="sm" fontFamily="mono" color="gray.600" _dark={{ color: 'gray.400' }}>
               {repo.forks_count.toLocaleString()}
             </Text>
           </HStack>

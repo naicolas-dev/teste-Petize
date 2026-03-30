@@ -2,6 +2,12 @@
   "app": {
     "title": "GitHub Explorer"
   },
+  "settings": {
+    "darkMode":    "Modo escuro",
+    "lightMode":   "Modo claro",
+    "switchToEn":  "Switch to English",
+    "switchToPt":  "Mudar para Português"
+  },
   "common": {
     "back":        "Voltar",
     "searchAgain": "Buscar novamente"

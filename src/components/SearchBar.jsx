@@ -42,14 +42,11 @@ export function SearchBar({ initialValue = '', onError }) {
           </InputLeftElement>
           <Input
             id="search-username-input"
+            variant="outline"
+            size="lg"
             placeholder={t('home.searchPlaceholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            bg="white"
-            borderColor="gray.200"
-            borderRadius="xl"
-            _hover={{ borderColor: 'blue.400' }}
-            _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 3px rgba(66,153,225,0.25)' }}
             fontSize="md"
           />
         </InputGroup>
@@ -57,9 +54,8 @@ export function SearchBar({ initialValue = '', onError }) {
         <Button
           id="search-submit-button"
           type="submit"
+          variant="solid"
           size="lg"
-          colorScheme="blue"
-          borderRadius="xl"
           px={8}
           fontWeight="semibold"
           flexShrink={0}

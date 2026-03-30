@@ -23,6 +23,7 @@ import { useGitHubUser } from '../hooks/useGitHubUser';
 import { UserCard } from '../components/UserCard';
 import { RepoList } from '../components/RepoList';
 import { SearchBar } from '../components/SearchBar';
+import { SettingsControls } from '../components/SettingsControls';
 
 /**
  * ProfilePage — shows a GitHub user's profile and their repositories.
@@ -34,17 +35,18 @@ export function ProfilePage() {
   const { user, loading, error } = useGitHubUser(username);
 
   return (
-    <Box minH="100vh" bg="gray.50">
+    <Box minH="100vh">
 
       {/* ── Top navigation bar ────────────────────────────────────── */}
       <Box
-        bg="white"
+        bg="rgba(255, 255, 255, 0.8)"
+        backdropFilter="blur(12px)"
+        _dark={{ bg: 'rgba(13, 17, 23, 0.8)', borderColor: '#30363D' }}
         borderBottom="1px solid"
         borderColor="gray.200"
         position="sticky"
         top={0}
         zIndex={100}
-        boxShadow="sm"
       >
         <Container maxW="6xl">
           <Flex
@@ -59,7 +61,9 @@ export function ProfilePage() {
               variant="ghost"
               size="sm"
               leftIcon={<ArrowBackIcon />}
-              colorScheme="blue"
+              color="gray.600"
+              _dark={{ color: 'gray.300' }}
+              _hover={{ bg: 'gray.100', color: '#191919', _dark: { bg: 'gray.800', color: '#DEDEDE' } }}
               flexShrink={0}
             >
               {t('common.back')}
@@ -70,6 +74,9 @@ export function ProfilePage() {
             <Box flex={1} w={{ base: '100%', md: 'auto' }}>
               <SearchBar initialValue={username} />
             </Box>
+
+            <Divider orientation="vertical" h="24px" display={{ base: 'none', md: 'block' }} />
+            <SettingsControls />
           </Flex>
         </Container>
       </Box>
@@ -141,7 +148,7 @@ export function ProfilePage() {
             {/* Right main — repo list */}
             <GridItem>
               <HStack mb={4}>
-                <Heading size="sm" color="gray.700">
+                <Heading size="sm" color="gray.700" _dark={{ color: 'gray.300' }}>
                   {t('profile.repositories')}
                 </Heading>
                 <Text fontSize="sm" color="gray.400">

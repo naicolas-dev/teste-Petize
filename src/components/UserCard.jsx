@@ -72,13 +72,16 @@ export function UserCard({ user }) {
   return (
     <Box
       as="aside"
-      bg="white"
+      bg="#FFFFFF"
+      _dark={{ bg: '#161B22', borderColor: '#30363D' }}
       border="1px solid"
-      borderColor="gray.200"
-      borderRadius="2xl"
+      borderColor="#D0D7DE"
+      borderRadius="xl"
+      boxShadow="sm"
       p={{ base: 5, md: 6 }}
       w="100%"
-      boxShadow="sm"
+      position="sticky"
+      top="90px"
     >
       {/* Avatar + name block */}
       <VStack spacing={3} align="center" mb={5}>
@@ -86,13 +89,15 @@ export function UserCard({ user }) {
           src={user.avatar_url}
           name={user.name ?? user.login}
           size="2xl"
-          border="3px solid"
-          borderColor="blue.100"
-          boxShadow="md"
+          borderRadius="full"
+          border="1px solid"
+          borderColor="#D0D7DE"
+          _dark={{ borderColor: '#30363D' }}
+          boxShadow="sm"
         />
         <VStack spacing={0.5} textAlign="center">
           {user.name && (
-            <Heading as="h1" size="md" color="gray.800" fontWeight="bold">
+            <Heading as="h1" size="md" color="#1F2328" _dark={{ color: '#E6EDF3' }} fontWeight="bold">
               {user.name}
             </Heading>
           )}
@@ -128,12 +133,14 @@ export function UserCard({ user }) {
               isExternal
               size="sm"
               variant="outline"
-              colorScheme="blue"
+              borderColor="#D0D7DE"
+              color="#24292F"
+              bg="#F6F8FA"
+              _dark={{ color: '#C9D1D9', borderColor: '#30363D', bg: '#21262D' }}
               leftIcon={<BsGlobe />}
               rightIcon={<ExternalLinkIcon />}
-              borderRadius="lg"
               w="100%"
-              _hover={{ textDecoration: 'none', bg: 'blue.50' }}
+              _hover={{ textDecoration: 'none', bg: '#F3F4F6', _dark: { bg: '#30363D' } }}
             >
               {t('profile.website')}
             </Button>
@@ -145,12 +152,14 @@ export function UserCard({ user }) {
               isExternal
               size="sm"
               variant="outline"
-              colorScheme="twitter"
+              borderColor="#D0D7DE"
+              color="#24292F"
+              bg="#F6F8FA"
+              _dark={{ color: '#C9D1D9', borderColor: '#30363D', bg: '#21262D' }}
               leftIcon={<BsTwitterX />}
               rightIcon={<ExternalLinkIcon />}
-              borderRadius="lg"
               w="100%"
-              _hover={{ textDecoration: 'none', bg: 'twitter.50' }}
+              _hover={{ textDecoration: 'none', bg: '#F3F4F6', _dark: { bg: '#30363D' } }}
             >
               {t('profile.twitter')}
             </Button>
@@ -164,28 +173,28 @@ export function UserCard({ user }) {
       <Flex justify="space-around" mb={4}>
         <Tooltip label={t('profile.followers')} hasArrow>
           <Stat textAlign="center" cursor="default">
-            <StatNumber fontSize="lg" fontWeight="bold" color="gray.800">
+            <StatNumber fontSize="lg" fontFamily="mono" fontWeight="bold" color="gray.800" _dark={{ color: 'gray.200' }}>
               {user.followers.toLocaleString()}
             </StatNumber>
-            <StatLabel fontSize="xs" color="gray.400">{t('profile.followers')}</StatLabel>
+            <StatLabel fontSize="xs" color="gray.500" textTransform="uppercase" letterSpacing="widest">{t('profile.followers')}</StatLabel>
           </Stat>
         </Tooltip>
         <Divider orientation="vertical" h="40px" alignSelf="center" />
         <Tooltip label={t('profile.following')} hasArrow>
           <Stat textAlign="center" cursor="default">
-            <StatNumber fontSize="lg" fontWeight="bold" color="gray.800">
+            <StatNumber fontSize="lg" fontFamily="mono" fontWeight="bold" color="gray.800" _dark={{ color: 'gray.200' }}>
               {user.following.toLocaleString()}
             </StatNumber>
-            <StatLabel fontSize="xs" color="gray.400">{t('profile.following')}</StatLabel>
+            <StatLabel fontSize="xs" color="gray.500" textTransform="uppercase" letterSpacing="widest">{t('profile.following')}</StatLabel>
           </Stat>
         </Tooltip>
         <Divider orientation="vertical" h="40px" alignSelf="center" />
         <Tooltip label={t('profile.publicRepos')} hasArrow>
           <Stat textAlign="center" cursor="default">
-            <StatNumber fontSize="lg" fontWeight="bold" color="gray.800">
+            <StatNumber fontSize="lg" fontFamily="mono" fontWeight="bold" color="gray.800" _dark={{ color: 'gray.200' }}>
               {user.public_repos.toLocaleString()}
             </StatNumber>
-            <StatLabel fontSize="xs" color="gray.400">{t('profile.repos')}</StatLabel>
+            <StatLabel fontSize="xs" color="gray.500" textTransform="uppercase" letterSpacing="widest">{t('profile.repos')}</StatLabel>
           </Stat>
         </Tooltip>
       </Flex>
