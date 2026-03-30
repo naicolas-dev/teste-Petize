@@ -1,76 +1,92 @@
-import { useState, useEffect, useCallback } from 'react';
-import { fetchGitHubUserRepos } from '../services/github.service';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { fetchAllGitHubUserRepos } from '../services/github.service';
 
 const PER_PAGE = 10;
 
 /**
- * Fetches a user's GitHub repositories with infinite-scroll pagination.
- *
- * Strategy (two separate effects):
- *  - Effect 1: fires when `username` or `sort` changes → resets state and
- *    always fetches page 1.
- *  - Effect 2: fires when `page` increments beyond 1 → appends more repos.
+ * Fetches a user's GitHub repositories from the public API and applies
+ * client-side filters (repo name + language) while preserving sort/direction.
  *
  * @param {string} username
- * @param {string} sort   - 'updated' | 'created' | 'pushed' | 'full_name'
+ * @param {string} sort - 'updated' | 'created' | 'pushed' | 'full_name'
  * @param {string} direction - 'asc' | 'desc'
- * @returns {{ repos, loading, hasMore, error, loadMore }}
+ * @param {{ query?: string, language?: string }} [filters]
+ * @returns {{ repos, languages, loading, hasMore, error, loadMore }}
  */
-export function useGitHubRepos(username, sort = 'updated', direction = 'desc') {
-  const [repos,   setRepos]   = useState([]);
-  const [page,    setPage]    = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [error,   setError]   = useState(null);
+export function useGitHubRepos(username, sort = 'updated', direction = 'desc', filters = {}) {
+  const { query = '', language = 'all' } = filters;
 
-  // ── Effect 1: New query (username / sort / direction changed) ──────────────
+  const [allRepos, setAllRepos] = useState([]);
+  const [visible, setVisible] = useState(PER_PAGE);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const languages = useMemo(() => {
+    return [...new Set(
+      allRepos
+        .map((repo) => repo.language)
+        .filter((lang) => typeof lang === 'string' && lang.length > 0)
+    )].sort((a, b) => a.localeCompare(b));
+  }, [allRepos]);
+
+  const filteredRepos = useMemo(() => {
+    return allRepos.filter((repo) => {
+      const matchesName =
+        !normalizedQuery ||
+        repo.name.toLowerCase().includes(normalizedQuery) ||
+        repo.full_name.toLowerCase().includes(normalizedQuery);
+
+      const matchesLanguage = language === 'all' || repo.language === language;
+      return matchesName && matchesLanguage;
+    });
+  }, [allRepos, normalizedQuery, language]);
+
+  const repos = useMemo(
+    () => filteredRepos.slice(0, visible),
+    [filteredRepos, visible]
+  );
+
+  const hasMore = visible < filteredRepos.length;
+
+  // New base query: username/sort/direction changed.
   useEffect(() => {
     if (!username) return;
 
     let cancelled = false;
-    // Reset pagination state synchronously before the async call
-    setPage(1);
-    setRepos([]);
-    setHasMore(true);
+    setAllRepos([]);
+    setVisible(PER_PAGE);
     setError(null);
     setLoading(true);
 
-    fetchGitHubUserRepos(username, { perPage: PER_PAGE, page: 1, sort, direction })
+    fetchAllGitHubUserRepos(username, { sort, direction })
       .then((data) => {
         if (cancelled) return;
-        setRepos(data);
-        setHasMore(data.length >= PER_PAGE);
+        setAllRepos(data);
       })
-      .catch((err)  => { if (!cancelled) setError(err); })
-      .finally(()   => { if (!cancelled) setLoading(false); });
+      .catch((err) => {
+        if (!cancelled) setError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
 
-    return () => { cancelled = true; };
-  }, [username, sort, direction]); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true;
+    };
+  }, [username, sort, direction]);
 
-  // ── Effect 2: Load more (page incremented) ────────────────────────────────
+  // New filter query: restart visible pagination.
   useEffect(() => {
-    // page === 1 is handled by Effect 1; skip when there is nothing to load
-    if (!username || page <= 1) return;
+    setVisible(PER_PAGE);
+  }, [normalizedQuery, language]);
 
-    let cancelled = false;
-    setLoading(true);
-
-    fetchGitHubUserRepos(username, { perPage: PER_PAGE, page, sort, direction })
-      .then((data) => {
-        if (cancelled) return;
-        setRepos((prev) => [...prev, ...data]);
-        setHasMore(data.length >= PER_PAGE);
-      })
-      .catch((err)  => { if (!cancelled) setError(err); })
-      .finally(()   => { if (!cancelled) setLoading(false); });
-
-    return () => { cancelled = true; };
-  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  /** Call this to trigger the next page load */
   const loadMore = useCallback(() => {
-    if (!loading && hasMore) setPage((p) => p + 1);
+    if (!loading && hasMore) {
+      setVisible((prev) => prev + PER_PAGE);
+    }
   }, [loading, hasMore]);
 
-  return { repos, loading, hasMore, error, loadMore };
+  return { repos, languages, loading, hasMore, error, loadMore };
 }

@@ -43,7 +43,7 @@ export async function fetchGitHubUser(username) {
   const data = await githubFetch(`/users/${encodeURIComponent(username)}`);
 
   // Parse and validate the response against the Zod schema.
-  // .parse() throws a ZodError if validation fails, which is intentional —
+  // .parse() throws a ZodError if validation fails, which is intentional -
   // callers should handle it via try/catch or React Query's error boundary.
   return githubUserSchema.parse(data);
 }
@@ -75,4 +75,39 @@ export async function fetchGitHubUserRepos(username, options = {}) {
   );
 
   return githubRepoListSchema.parse(data);
+}
+
+/**
+ * Fetches all public repositories for a user by traversing every API page.
+ * Endpoint: GET /users/{username}/repos
+ *
+ * @param {string} username - The GitHub username
+ * @param {{
+ *   sort?: 'created'|'updated'|'pushed'|'full_name',
+ *   direction?: 'asc'|'desc'
+ * }} [options]
+ * @returns {Promise<import('../schemas/githubRepo.schema').GitHubRepoList>}
+ */
+export async function fetchAllGitHubUserRepos(username, options = {}) {
+  const { sort = 'updated', direction = 'desc' } = options;
+  const perPage = 100;
+  const allRepos = [];
+  let page = 1;
+  let keepLoading = true;
+
+  while (keepLoading) {
+    // Keep using the same validated list endpoint and aggregate every page.
+    const pageRepos = await fetchGitHubUserRepos(username, {
+      perPage,
+      page,
+      sort,
+      direction,
+    });
+
+    allRepos.push(...pageRepos);
+    keepLoading = pageRepos.length === perPage;
+    page += 1;
+  }
+
+  return allRepos;
 }
