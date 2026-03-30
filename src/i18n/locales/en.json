@@ -3,60 +3,65 @@
     "title": "GitHub Explorer"
   },
   "settings": {
-    "darkMode":    "Dark",
-    "lightMode":   "Light",
-    "systemMode":  "System",
-    "theme":       "Theme",
-    "language":    "Language",
-    "switchToEn":  "Switch to English",
-    "switchToPt":  "Mudar para Português"
+    "darkMode": "Dark",
+    "lightMode": "Light",
+    "systemMode": "System",
+    "theme": "Theme",
+    "language": "Language",
+    "switchToEn": "Switch to English",
+    "switchToPt": "Mudar para Portugu\u00eas"
   },
   "common": {
-    "back":        "Back",
+    "back": "Back",
     "searchAgain": "Search again"
   },
   "home": {
-    "title":             "Explore GitHub Users",
-    "subtitle":          "Find any developer and browse their public repositories on GitHub.",
-    "searchPlaceholder": "Enter a GitHub username…",
-    "searchButton":      "Search",
-    "searchHint":        "Try: torvalds, gaearon or sindresorhus",
-    "emptyQuery":        "Please enter a username before searching."
+    "title": "Explore GitHub Users",
+    "subtitle": "Find any developer and browse their public repositories on GitHub.",
+    "searchPlaceholder": "Enter a GitHub username...",
+    "searchButton": "Search",
+    "searchHint": "Try: torvalds, gaearon or sindresorhus",
+    "emptyQuery": "Please enter a username before searching."
   },
   "profile": {
     "repositories": "Repositories",
-    "followers":    "Followers",
-    "following":    "Following",
-    "publicRepos":  "Public Repos",
-    "repos":        "Repos",
-    "website":      "Website",
-    "twitter":      "Twitter / X",
-    "noRepos":      "This user has no public repositories.",
-    "noMoreRepos":  "All repositories loaded.",
+    "followers": "Followers",
+    "following": "Following",
+    "publicRepos": "Public Repos",
+    "repos": "Repos",
+    "website": "Website",
+    "twitter": "Twitter / X",
+    "noRepos": "This user has no public repositories.",
+    "noReposFiltered": "No repositories match the current filters.",
+    "noMoreRepos": "All repositories loaded.",
     "organization": "Organization"
   },
+  "filters": {
+    "repoNamePlaceholder": "Filter by repository name...",
+    "languageAll": "All languages"
+  },
   "sort": {
-    "label":     "Sort by",
+    "label": "Sort by",
     "direction": "Order",
-    "updated":   "Last updated",
-    "created":   "Created",
-    "pushed":    "Push",
+    "updated": "Last updated",
+    "created": "Created",
+    "pushed": "Push",
     "full_name": "Name",
-    "date_asc":  "Oldest",
+    "date_asc": "Oldest",
     "date_desc": "Newest",
-    "name_asc":  "A-Z",
+    "name_asc": "A-Z",
     "name_desc": "Z-A"
   },
   "repo": {
-    "stars":    "Stars",
-    "forks":    "Forks",
+    "stars": "Stars",
+    "forks": "Forks",
     "archived": "Archived"
   },
   "error": {
-    "userNotFound":      "User not found",
-    "userNotFoundDesc":  "No GitHub user named \"{{username}}\" was found.",
-    "rateLimited":       "API rate limit exceeded",
-    "rateLimitedDesc":   "GitHub limits unauthenticated requests. Please wait a moment and try again.",
-    "generic":           "Something went wrong"
+    "userNotFound": "User not found",
+    "userNotFoundDesc": "No GitHub user named \"{{username}}\" was found.",
+    "rateLimited": "API rate limit exceeded",
+    "rateLimitedDesc": "GitHub limits unauthenticated requests. Please wait a moment and try again.",
+    "generic": "Something went wrong"
   }
 }
