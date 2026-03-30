@@ -27,7 +27,7 @@ function InfoRow({ icon, value, href }) {
   if (!value) return null;
 
   const text = (
-    <HStack spacing={2} color="gray.600" fontSize="sm">
+    <HStack spacing={2} color="gray.600" _dark={{ color: '#e6edf3' }} fontSize="sm">
       <Box color="gray.400" flexShrink={0}>{icon}</Box>
       <Text noOfLines={1}>{value}</Text>
     </HStack>
@@ -118,7 +118,7 @@ export function UserCard({ user }) {
 
       {/* Bio */}
       {user.bio && (
-        <Text fontSize="sm" color="gray.600" textAlign="center" mb={4} lineHeight="tall">
+        <Text fontSize="sm" color="gray.600" _dark={{ color: '#e6edf3' }} textAlign="center" mb={4} lineHeight="tall">
           {user.bio}
         </Text>
       )}
