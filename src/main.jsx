@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 
 const theme = extendTheme({
+  config: {
+    initialColorMode: 'system', // Reads OS dark/light on first visit — no flash!
+    useSystemColorMode: false,  // We manage it manually via the menu
+  },
   styles: {
     global: (props) => ({
       body: {

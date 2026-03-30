@@ -3,8 +3,11 @@
     "title": "GitHub Explorer"
   },
   "settings": {
-    "darkMode":    "Dark mode",
-    "lightMode":   "Light mode",
+    "darkMode":    "Dark",
+    "lightMode":   "Light",
+    "systemMode":  "System",
+    "theme":       "Theme",
+    "language":    "Language",
     "switchToEn":  "Switch to English",
     "switchToPt":  "Mudar para Português"
   },
