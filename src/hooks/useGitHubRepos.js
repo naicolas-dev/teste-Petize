@@ -1,11 +1,26 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { fetchAllGitHubUserRepos } from '../services/github.service';
+import { fetchAllGitHubUserRepos, fetchGitHubUserRepos } from '../services/github.service';
 
 const PER_PAGE = 10;
 
+function mergeUniqueRepos(previousRepos, nextRepos) {
+  const seenIds = new Set(previousRepos.map((repo) => repo.id));
+  const mergedRepos = [...previousRepos];
+
+  nextRepos.forEach((repo) => {
+    if (!seenIds.has(repo.id)) {
+      seenIds.add(repo.id);
+      mergedRepos.push(repo);
+    }
+  });
+
+  return mergedRepos;
+}
+
 /**
- * Fetches a user's GitHub repositories from the public API and applies
- * client-side filters (repo name + language) while preserving sort/direction.
+ * Fetches a user's repositories with API pagination (10 items/page) for
+ * infinite scroll, and keeps a full repo catalog for language/name filters.
  *
  * @param {string} username
  * @param {string} sort - 'updated' | 'created' | 'pushed' | 'full_name'
@@ -15,24 +30,128 @@ const PER_PAGE = 10;
  */
 export function useGitHubRepos(username, sort = 'updated', direction = 'desc', filters = {}) {
   const { query = '', language = 'all' } = filters;
-
-  const [allRepos, setAllRepos] = useState([]);
-  const [visible, setVisible] = useState(PER_PAGE);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   const normalizedQuery = query.trim().toLowerCase();
+  const hasActiveFilters = normalizedQuery.length > 0 || language !== 'all';
+
+  // API-paginated list (used when no filters are active).
+  const [repos, setRepos] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMoreApi, setHasMoreApi] = useState(true);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [pageError, setPageError] = useState(null);
+
+  // Full catalog (used for language options + accurate local filtering).
+  const [catalogRepos, setCatalogRepos] = useState([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogError, setCatalogError] = useState(null);
+
+  // Local visibility pagination for filtered mode.
+  const [visibleFiltered, setVisibleFiltered] = useState(PER_PAGE);
+
+  // Base API fetch: page 1 when username/sort/direction changes.
+  useEffect(() => {
+    if (!username) return;
+
+    let cancelled = false;
+    setRepos([]);
+    setPage(1);
+    setHasMoreApi(true);
+    setPageError(null);
+    setPageLoading(true);
+
+    fetchGitHubUserRepos(username, {
+      perPage: PER_PAGE,
+      page: 1,
+      sort,
+      direction,
+    })
+      .then((data) => {
+        if (cancelled) return;
+        setRepos(data);
+        setHasMoreApi(data.length === PER_PAGE);
+      })
+      .catch((err) => {
+        if (!cancelled) setPageError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setPageLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [username, sort, direction]);
+
+  // API fetch for additional pages in infinite scroll mode.
+  useEffect(() => {
+    if (!username || page <= 1 || hasActiveFilters) return;
+
+    let cancelled = false;
+    setPageLoading(true);
+
+    fetchGitHubUserRepos(username, {
+      perPage: PER_PAGE,
+      page,
+      sort,
+      direction,
+    })
+      .then((data) => {
+        if (cancelled) return;
+        setRepos((prevRepos) => mergeUniqueRepos(prevRepos, data));
+        setHasMoreApi(data.length === PER_PAGE);
+      })
+      .catch((err) => {
+        if (!cancelled) setPageError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setPageLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [username, page, sort, direction, hasActiveFilters]);
+
+  // Full catalog fetch for dynamic language options and filter accuracy.
+  useEffect(() => {
+    if (!username) return;
+
+    let cancelled = false;
+    setCatalogRepos([]);
+    setCatalogError(null);
+    setCatalogLoading(true);
+
+    fetchAllGitHubUserRepos(username, { sort, direction })
+      .then((data) => {
+        if (!cancelled) setCatalogRepos(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setCatalogError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setCatalogLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [username, sort, direction]);
+
+  // Reset filtered local pagination when filter values change.
+  useEffect(() => {
+    setVisibleFiltered(PER_PAGE);
+  }, [normalizedQuery, language, username, sort, direction]);
 
   const languages = useMemo(() => {
     return [...new Set(
-      allRepos
+      catalogRepos
         .map((repo) => repo.language)
         .filter((lang) => typeof lang === 'string' && lang.length > 0)
     )].sort((a, b) => a.localeCompare(b));
-  }, [allRepos]);
+  }, [catalogRepos]);
 
   const filteredRepos = useMemo(() => {
-    return allRepos.filter((repo) => {
+    return catalogRepos.filter((repo) => {
       const matchesName =
         !normalizedQuery ||
         repo.name.toLowerCase().includes(normalizedQuery) ||
@@ -41,52 +160,46 @@ export function useGitHubRepos(username, sort = 'updated', direction = 'desc', f
       const matchesLanguage = language === 'all' || repo.language === language;
       return matchesName && matchesLanguage;
     });
-  }, [allRepos, normalizedQuery, language]);
+  }, [catalogRepos, normalizedQuery, language]);
 
-  const repos = useMemo(
-    () => filteredRepos.slice(0, visible),
-    [filteredRepos, visible]
+  const filteredVisibleRepos = useMemo(
+    () => filteredRepos.slice(0, visibleFiltered),
+    [filteredRepos, visibleFiltered]
   );
 
-  const hasMore = visible < filteredRepos.length;
+  const visibleRepos = hasActiveFilters ? filteredVisibleRepos : repos;
+  const hasMore = hasActiveFilters
+    ? visibleFiltered < filteredRepos.length
+    : hasMoreApi;
 
-  // New base query: username/sort/direction changed.
-  useEffect(() => {
-    if (!username) return;
+  const loading = hasActiveFilters
+    ? (catalogLoading || pageLoading)
+    : pageLoading;
 
-    let cancelled = false;
-    setAllRepos([]);
-    setVisible(PER_PAGE);
-    setError(null);
-    setLoading(true);
-
-    fetchAllGitHubUserRepos(username, { sort, direction })
-      .then((data) => {
-        if (cancelled) return;
-        setAllRepos(data);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [username, sort, direction]);
-
-  // New filter query: restart visible pagination.
-  useEffect(() => {
-    setVisible(PER_PAGE);
-  }, [normalizedQuery, language]);
+  const error = hasActiveFilters
+    ? (catalogError ?? pageError)
+    : pageError;
 
   const loadMore = useCallback(() => {
-    if (!loading && hasMore) {
-      setVisible((prev) => prev + PER_PAGE);
+    if (hasActiveFilters) {
+      if (!catalogLoading && visibleFiltered < filteredRepos.length) {
+        setVisibleFiltered((prev) => prev + PER_PAGE);
+      }
+      return;
     }
-  }, [loading, hasMore]);
 
-  return { repos, languages, loading, hasMore, error, loadMore };
+    if (!pageLoading && hasMoreApi) {
+      setPage((prev) => prev + 1);
+    }
+  }, [hasActiveFilters, catalogLoading, visibleFiltered, filteredRepos.length, pageLoading, hasMoreApi]);
+
+  return {
+    repos: visibleRepos,
+    languages,
+    loading,
+    hasMore,
+    error,
+    loadMore,
+  };
 }
+
