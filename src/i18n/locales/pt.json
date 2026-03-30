@@ -1,16 +1,53 @@
 {
   "app": {
-    "title": "Teste Técnico Petize"
+    "title": "GitHub Explorer"
   },
   "common": {
-    "loading": "Carregando...",
-    "error": "Ocorreu um erro.",
-    "retry": "Tentar novamente"
+    "back":        "Voltar",
+    "searchAgain": "Buscar novamente"
   },
   "home": {
-    "title": "Buscar Usuários do GitHub"
+    "title":             "Explore usuários do GitHub",
+    "subtitle":          "Encontre qualquer desenvolvedor e veja seus repositórios públicos.",
+    "searchPlaceholder": "Digite um nome de usuário do GitHub…",
+    "searchButton":      "Buscar",
+    "searchHint":        "Experimente: torvalds, gaearon ou sindresorhus",
+    "emptyQuery":        "Por favor, digite um nome de usuário antes de buscar."
   },
   "profile": {
-    "title": "Perfil de {{username}}"
+    "repositories": "Repositórios",
+    "followers":    "Seguidores",
+    "following":    "Seguindo",
+    "publicRepos":  "Repos públicos",
+    "repos":        "Repos",
+    "website":      "Site",
+    "twitter":      "Twitter / X",
+    "noRepos":      "Este usuário não possui repositórios públicos.",
+    "noMoreRepos":  "Todos os repositórios foram carregados.",
+    "organization": "Organização"
+  },
+  "sort": {
+    "label":     "Ordenar por",
+    "direction": "Ordem",
+    "updated":   "Última atualização",
+    "created":   "Data de criação",
+    "pushed":    "Push",
+    "full_name": "Nome",
+    "date_asc":  "Mais antigos",
+    "date_desc": "Mais recentes",
+    "name_asc":  "A-Z",
+    "name_desc": "Z-A"
+  },
+  "repo": {
+    "stars":    "Estrelas",
+    "forks":    "Forks",
+    "archived": "Arquivado"
+  },
+  "error": {
+    "userNotFound":      "Usuário não encontrado",
+    "userNotFoundDesc":  "Nenhum usuário do GitHub com o nome \"{{username}}\" foi encontrado.",
+    "rateLimited":       "Limite de requisições da API atingido",
+    "rateLimitedDesc":   "O GitHub limita requisições não autenticadas. Aguarde um momento e tente novamente.",
+    "generic":           "Algo deu errado"
   }
 }

@@ -1,16 +1,53 @@
 {
   "app": {
-    "title": "Petize Technical Test"
+    "title": "GitHub Explorer"
   },
   "common": {
-    "loading": "Loading...",
-    "error": "An error occurred.",
-    "retry": "Try again"
+    "back":        "Back",
+    "searchAgain": "Search again"
   },
   "home": {
-    "title": "Search GitHub Users"
+    "title":             "Explore GitHub Users",
+    "subtitle":          "Find any developer and browse their public repositories.",
+    "searchPlaceholder": "Enter a GitHub username…",
+    "searchButton":      "Search",
+    "searchHint":        "Try: torvalds, gaearon or sindresorhus",
+    "emptyQuery":        "Please enter a username before searching."
   },
   "profile": {
-    "title": "{{username}}'s Profile"
+    "repositories": "Repositories",
+    "followers":    "Followers",
+    "following":    "Following",
+    "publicRepos":  "Public Repos",
+    "repos":        "Repos",
+    "website":      "Website",
+    "twitter":      "Twitter / X",
+    "noRepos":      "This user has no public repositories.",
+    "noMoreRepos":  "All repositories loaded.",
+    "organization": "Organization"
+  },
+  "sort": {
+    "label":     "Sort by",
+    "direction": "Order",
+    "updated":   "Last updated",
+    "created":   "Created",
+    "pushed":    "Push",
+    "full_name": "Name",
+    "date_asc":  "Oldest",
+    "date_desc": "Newest",
+    "name_asc":  "A-Z",
+    "name_desc": "Z-A"
+  },
+  "repo": {
+    "stars":    "Stars",
+    "forks":    "Forks",
+    "archived": "Archived"
+  },
+  "error": {
+    "userNotFound":      "User not found",
+    "userNotFoundDesc":  "No GitHub user named \"{{username}}\" was found.",
+    "rateLimited":       "API rate limit exceeded",
+    "rateLimitedDesc":   "GitHub limits unauthenticated requests. Please wait a moment and try again.",
+    "generic":           "Something went wrong"
   }
 }
