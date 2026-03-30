@@ -1,0 +1,10 @@
+{
+  "app": {
+    "title": "Petize Technical Test"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "retry": "Try again"
+  }
+}

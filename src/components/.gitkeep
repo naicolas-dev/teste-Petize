@@ -1,0 +1,23 @@
+# Components — shared UI building blocks
+# src/components/
+
+# Pages — route-level views
+# src/pages/
+
+# Hooks — custom React hooks
+# src/hooks/
+
+# Services — API calls and data fetching
+# src/services/
+
+# Schemas — Zod validation schemas
+# src/schemas/
+
+# Utils — pure helper functions
+# src/utils/
+
+# Context — React Context providers
+# src/context/
+
+# i18n — translations and i18next config
+# src/i18n/

@@ -1,0 +1,10 @@
+{
+  "app": {
+    "title": "Teste Técnico Petize"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro.",
+    "retry": "Tentar novamente"
+  }
+}
