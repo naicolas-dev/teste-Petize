@@ -1,4 +1,4 @@
-{
+﻿{
   "app": {
     "title": "GitHub Explorer"
   },
@@ -9,48 +9,74 @@
     "theme": "Tema",
     "language": "Idioma",
     "switchToEn": "Switch to English",
-    "switchToPt": "Mudar para Portugu\u00eas"
+    "switchToPt": "Mudar para Português",
+    "languagePtBr": "Português (BR)",
+    "languageEnUs": "Inglês (US)",
+    "languageMenuAria": "Selecionar idioma",
+    "themeMenuAria": "Selecionar tema",
+    "languageCodePt": "pt-BR",
+    "languageCodeEn": "en-US"
   },
   "common": {
     "back": "Voltar",
     "searchAgain": "Buscar novamente"
   },
   "home": {
-    "title": "Explore usu\u00e1rios do GitHub",
-    "subtitle": "Encontre qualquer desenvolvedor e veja seus reposit\u00f3rios p\u00fablicos no GitHub.",
-    "searchPlaceholder": "Digite um nome de usu\u00e1rio do GitHub...",
+    "title": "Explore usuários do GitHub",
+    "subtitle": "Encontre qualquer desenvolvedor e veja seus repositórios públicos no GitHub.",
+    "searchPlaceholder": "Digite um nome de usuário do GitHub...",
     "searchButton": "Buscar",
     "searchHint": "Experimente: torvalds, gaearon ou sindresorhus",
-    "emptyQuery": "Por favor, digite um nome de usu\u00e1rio antes de buscar."
+    "emptyQuery": "Por favor, digite um nome de usuário antes de buscar.",
+    "brand": "Buscar devs",
+    "userNotFound": "Não há usuários com esse nome.",
+    "searchLoading": "Buscando",
+    "searchInputAria": "Buscar usuário do GitHub",
+    "searchButtonAria": "Buscar usuário no GitHub",
+    "invalidUsername": "Use apenas letras, numeros e hifen (maximo de 39 caracteres).",
+    "previewLoading": "Verificando usuario...",
+    "previewReady": "Encontrado",
+    "openProfileButton": "Abrir",
+    "openProfileAria": "Abrir perfil do usuario",
+    "suggestionsLoading": "Buscando usuários...",
+    "suggestionsTitle": "Resultados",
+    "suggestionsMinChars": "Digite pelo menos {{count}} caracteres para mostrar os resultados.",
+    "noSimilarUsers": "Nenhum usuário foi encontrado.",
+    "exactMatchHint": "Nome exato detectado. Pressione Enter para abrir o perfil.",
+    "suggestionOpenAria": "Abrir perfil de {{username}}"
   },
   "profile": {
-    "repositories": "Reposit\u00f3rios",
+    "repositories": "Repositórios",
     "followers": "Seguidores",
     "following": "Seguindo",
-    "publicRepos": "Repos p\u00fablicos",
+    "publicRepos": "Repos públicos",
     "repos": "Repos",
     "website": "Site",
     "twitter": "Twitter / X",
-    "noRepos": "Este usu\u00e1rio n\u00e3o possui reposit\u00f3rios p\u00fablicos.",
+    "noRepos": "Este usuário não possui repositórios públicos.",
     "noReposFiltered": "Nenhum repositorio corresponde aos filtros atuais.",
-    "noMoreRepos": "Todos os reposit\u00f3rios foram carregados.",
-    "organization": "Organiza\u00e7\u00e3o"
+    "noMoreRepos": "Todos os repositórios foram carregados.",
+    "organization": "Organização"
   },
   "filters": {
     "repoNamePlaceholder": "Filtrar por nome do repositorio...",
-    "languageAll": "Todas as linguagens"
+    "languageAll": "Todas as linguagens",
+    "repoNameAria": "Filtrar por nome do repositório",
+    "languageAria": "Filtrar por linguagem"
   },
   "sort": {
     "label": "Ordenar por",
     "direction": "Ordem",
-    "updated": "\u00daltima atualiza\u00e7\u00e3o",
-    "created": "Data de cria\u00e7\u00e3o",
+    "updated": "Última atualização",
+    "created": "Data de criação",
     "pushed": "Push",
     "full_name": "Nome",
     "date_asc": "Mais antigos",
     "date_desc": "Mais recentes",
     "name_asc": "A-Z",
-    "name_desc": "Z-A"
+    "name_desc": "Z-A",
+    "fieldAria": "Selecionar ordenação",
+    "directionAria": "Selecionar direção"
   },
   "repo": {
     "stars": "Estrelas",
@@ -58,10 +84,10 @@
     "archived": "Arquivado"
   },
   "error": {
-    "userNotFound": "Usu\u00e1rio n\u00e3o encontrado",
-    "userNotFoundDesc": "Nenhum usu\u00e1rio do GitHub com o nome \"{{username}}\" foi encontrado.",
-    "rateLimited": "Limite de requisi\u00e7\u00f5es da API atingido",
-    "rateLimitedDesc": "O GitHub limita requisi\u00e7\u00f5es n\u00e3o autenticadas. Aguarde um momento e tente novamente.",
+    "userNotFound": "Usuário não encontrado",
+    "userNotFoundDesc": "Nenhum usuário do GitHub com o nome \"{{username}}\" foi encontrado.",
+    "rateLimited": "Limite de requisições da API atingido",
+    "rateLimitedDesc": "O GitHub limita requisições não autenticadas. Aguarde um momento e tente novamente.",
     "generic": "Algo deu errado"
   }
 }

@@ -1,4 +1,4 @@
-{
+﻿{
   "app": {
     "title": "GitHub Explorer"
   },
@@ -9,7 +9,13 @@
     "theme": "Theme",
     "language": "Language",
     "switchToEn": "Switch to English",
-    "switchToPt": "Mudar para Portugu\u00eas"
+    "switchToPt": "Switch to Portuguese",
+    "languagePtBr": "Portuguese (BR)",
+    "languageEnUs": "English (US)",
+    "languageMenuAria": "Select language",
+    "themeMenuAria": "Select theme",
+    "languageCodePt": "pt-BR",
+    "languageCodeEn": "en-US"
   },
   "common": {
     "back": "Back",
@@ -21,7 +27,23 @@
     "searchPlaceholder": "Enter a GitHub username...",
     "searchButton": "Search",
     "searchHint": "Try: torvalds, gaearon or sindresorhus",
-    "emptyQuery": "Please enter a username before searching."
+    "emptyQuery": "Please enter a username before searching.",
+    "brand": "Search devs",
+    "userNotFound": "No users found with that username.",
+    "searchLoading": "Searching",
+    "searchInputAria": "Search GitHub username",
+    "searchButtonAria": "Search GitHub user",
+    "invalidUsername": "Use only letters, numbers, and hyphens (max 39 chars).",
+    "previewLoading": "Checking username...",
+    "previewReady": "Found",
+    "openProfileButton": "Open",
+    "openProfileAria": "Open user profile",
+    "suggestionsLoading": "Looking for users...",
+    "suggestionsTitle": "Results",
+    "suggestionsMinChars": "Type at least {{count}} characters to show the results.",
+    "noSimilarUsers": "No users found.",
+    "exactMatchHint": "Exact username detected. Press Enter to open the profile.",
+    "suggestionOpenAria": "Open profile for {{username}}"
   },
   "profile": {
     "repositories": "Repositories",
@@ -38,7 +60,9 @@
   },
   "filters": {
     "repoNamePlaceholder": "Filter by repository name...",
-    "languageAll": "All languages"
+    "languageAll": "All languages",
+    "repoNameAria": "Filter repositories by name",
+    "languageAria": "Filter repositories by language"
   },
   "sort": {
     "label": "Sort by",
@@ -50,7 +74,9 @@
     "date_asc": "Oldest",
     "date_desc": "Newest",
     "name_asc": "A-Z",
-    "name_desc": "Z-A"
+    "name_desc": "Z-A",
+    "fieldAria": "Select sort field",
+    "directionAria": "Select sort direction"
   },
   "repo": {
     "stars": "Stars",
