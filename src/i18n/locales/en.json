@@ -17,7 +17,7 @@
   },
   "home": {
     "title":             "Explore GitHub Users",
-    "subtitle":          "Find any developer and browse their public repositories.",
+    "subtitle":          "Find any developer and browse their public repositories on GitHub.",
     "searchPlaceholder": "Enter a GitHub username…",
     "searchButton":      "Search",
     "searchHint":        "Try: torvalds, gaearon or sindresorhus",
