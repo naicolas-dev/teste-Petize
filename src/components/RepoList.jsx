@@ -4,7 +4,6 @@ import {
   Box,
   VStack,
   Text,
-  Spinner,
   Alert,
   AlertIcon,
   AlertTitle,
@@ -15,6 +14,7 @@ import { useGitHubRepos } from '../hooks/useGitHubRepos';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { SortSelector } from './SortSelector';
 import { RepoCard } from './RepoCard';
+import { RepoSkeleton } from './LoadingSkeleton';
 
 /**
  * RepoList — full repo listing with sort controls and infinite scroll.
@@ -70,11 +70,12 @@ export function RepoList({ username }) {
         </Center>
       )}
 
-      {/* Loading spinner */}
+      {/* Loading Skeletons for infinite scroll */}
       {loading && (
-        <Center py={8}>
-          <Spinner size="md" color="blue.500" thickness="3px" />
-        </Center>
+        <VStack spacing={3} align="stretch" mt={4}>
+          <RepoSkeleton />
+          <RepoSkeleton />
+        </VStack>
       )}
 
       {/* End-of-list message */}

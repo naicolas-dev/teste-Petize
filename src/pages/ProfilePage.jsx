@@ -12,7 +12,6 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Spinner,
   Center,
   Button,
   HStack,
@@ -24,6 +23,7 @@ import { UserCard } from '../components/UserCard';
 import { RepoList } from '../components/RepoList';
 import { SearchBar } from '../components/SearchBar';
 import { SettingsControls } from '../components/SettingsControls';
+import { PageSkeleton } from '../components/LoadingSkeleton';
 
 /**
  * ProfilePage — shows a GitHub user's profile and their repositories.
@@ -84,12 +84,8 @@ export function ProfilePage() {
       {/* ── Main content ──────────────────────────────────────────── */}
       <Container maxW="6xl" py={{ base: 6, md: 8 }} px={{ base: 4, md: 6 }}>
 
-        {/* Loading */}
-        {loading && (
-          <Center py={24}>
-            <Spinner size="xl" color="blue.500" thickness="4px" />
-          </Center>
-        )}
+        {/* Loading Skeleton */}
+        {loading && <PageSkeleton />}
 
         {/* Error: user not found */}
         {!loading && error?.status === 404 && (
