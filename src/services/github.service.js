@@ -1,0 +1,63 @@
+import { githubUserSchema } from '../schemas/githubUser.schema';
+import { githubRepoListSchema } from '../schemas/githubRepo.schema';
+
+/** Base URL for the GitHub REST API v3 */
+const GITHUB_API_BASE = 'https://api.github.com';
+
+/**
+ * Shared fetch wrapper that adds the required GitHub API headers.
+ * @param {string} path - API path (e.g. "/users/torvalds")
+ * @returns {Promise<unknown>} - Parsed JSON response
+ */
+async function githubFetch(path) {
+  const response = await fetch(`${GITHUB_API_BASE}${path}`, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+
+  if (!response.ok) {
+    // Propagate a structured error with the HTTP status code
+    const error = new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    error.status = response.status;
+    throw error;
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetches and validates a GitHub user profile.
+ * Endpoint: GET /users/{username}
+ *
+ * @param {string} username - The GitHub username to look up
+ * @returns {Promise<import('../schemas/githubUser.schema').GitHubUser>}
+ */
+export async function fetchGitHubUser(username) {
+  const data = await githubFetch(`/users/${encodeURIComponent(username)}`);
+
+  // Parse and validate the response against the Zod schema.
+  // .parse() throws a ZodError if validation fails, which is intentional —
+  // callers should handle it via try/catch or React Query's error boundary.
+  return githubUserSchema.parse(data);
+}
+
+/**
+ * Fetches and validates the public repositories of a GitHub user.
+ * Endpoint: GET /users/{username}/repos
+ *
+ * @param {string} username - The GitHub username
+ * @param {{ perPage?: number, sort?: 'created'|'updated'|'pushed'|'full_name' }} [options]
+ * @returns {Promise<import('../schemas/githubRepo.schema').GitHubRepoList>}
+ */
+export async function fetchGitHubUserRepos(username, options = {}) {
+  const { perPage = 30, sort = 'updated' } = options;
+  const query = new URLSearchParams({ per_page: String(perPage), sort });
+
+  const data = await githubFetch(
+    `/users/${encodeURIComponent(username)}/repos?${query}`
+  );
+
+  return githubRepoListSchema.parse(data);
+}
