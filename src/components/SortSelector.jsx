@@ -71,6 +71,7 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
           value={sort}
           onChange={(e) => onSortChange(e.target.value)}
           w="160px"
+          aria-label={t('sort.fieldAria')}
           {...selectStyles}
         >
           {SORT_OPTIONS.map(({ value, labelKey }) => (
@@ -92,6 +93,7 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
           value={direction}
           onChange={(e) => onDirectionChange(e.target.value)}
           w="130px"
+          aria-label={t('sort.directionAria')}
           {...selectStyles}
         >
           {directionOptions.map(({ value, labelKey }) => (

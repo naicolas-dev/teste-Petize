@@ -18,69 +18,71 @@ import { MoonIcon, SunIcon, ChevronDownIcon, CheckIcon } from '@chakra-ui/icons'
 import { MdTranslate, MdComputer } from 'react-icons/md';
 
 const THEME_KEY = 'petize-theme';
-const LANG_KEY  = 'petize-lng';
+const LANG_KEY = 'petize-lng';
 
 export function SettingsControls() {
-  const { colorMode, setColorMode } = useColorMode();
+  const { setColorMode } = useColorMode();
   const { i18n, t } = useTranslation();
 
-  const isPt  = i18n.language.startsWith('pt');
-  const isDark = colorMode === 'dark';
+  const isPt = i18n.language.startsWith('pt');
 
   const [themePreference, setThemePreference] = useState(
     () => localStorage.getItem(THEME_KEY) || 'system'
   );
 
-  const applyTheme = (pref) => {
-    setThemePreference(pref);
-    localStorage.setItem(THEME_KEY, pref);
-    if (pref === 'system') {
+  const applyTheme = (preference) => {
+    setThemePreference(preference);
+    localStorage.setItem(THEME_KEY, preference);
+
+    if (preference === 'system') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setColorMode(prefersDark ? 'dark' : 'light');
-    } else {
-      setColorMode(pref);
+      return;
     }
+
+    setColorMode(preference);
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved) applyTheme(saved);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme) applyTheme(savedTheme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const applyLanguage = (lang) => {
-    i18n.changeLanguage(lang);
-    localStorage.setItem(LANG_KEY, lang);
+  const applyLanguage = (language) => {
+    i18n.changeLanguage(language);
+    localStorage.setItem(LANG_KEY, language);
   };
 
-  // ─── Palette ──────────────────────────────────────────────────────
-  const containerBg     = useColorModeValue('#FFFFFF', '#21262D');
+  const containerBg = useColorModeValue('#FFFFFF', '#21262D');
   const containerBorder = useColorModeValue('#D0D7DE', '#30363D');
-  const btnColor        = useColorModeValue('#1F2328', '#E6EDF3');
-  const btnHover        = useColorModeValue('#F6F8FA', '#2D333B');
-  const menuBg          = useColorModeValue('#FFFFFF', '#161B22');
-  const menuBorder      = useColorModeValue('#D0D7DE', '#30363D');
-  const menuShadow      = useColorModeValue(
+  const buttonColor = useColorModeValue('#1F2328', '#E6EDF3');
+  const buttonHover = useColorModeValue('#F6F8FA', '#2D333B');
+  const menuBg = useColorModeValue('#FFFFFF', '#161B22');
+  const menuBorder = useColorModeValue('#D0D7DE', '#30363D');
+  const menuShadow = useColorModeValue(
     '0 8px 24px rgba(140,149,159,0.2)',
     '0 8px 24px rgba(0,0,0,0.6)'
   );
-  const itemHover       = useColorModeValue('#F6F8FA', '#21262D');
-  const divColor        = useColorModeValue('#D0D7DE', '#30363D');
-  const labelColor      = useColorModeValue('#57606A', '#8B949E');
-  const activeColor     = '#0969DA';
+  const itemHover = useColorModeValue('#F6F8FA', '#21262D');
+  const dividerColor = useColorModeValue('#D0D7DE', '#30363D');
+  const labelColor = useColorModeValue('#57606A', '#8B949E');
+  const activeColor = '#0969DA';
 
-  // Current theme label + icon
   const themeLabel =
-    themePreference === 'system' ? t('settings.systemMode') :
-    themePreference === 'dark'   ? t('settings.darkMode')   :
-                                   t('settings.lightMode');
+    themePreference === 'system'
+      ? t('settings.systemMode')
+      : themePreference === 'dark'
+        ? t('settings.darkMode')
+        : t('settings.lightMode');
 
   const themeIcon =
-    themePreference === 'system' ? <MdComputer />   :
-    themePreference === 'dark'   ? <MoonIcon />      :
-                                   <SunIcon />;
+    themePreference === 'system'
+      ? <MdComputer />
+      : themePreference === 'dark'
+        ? <MoonIcon />
+        : <SunIcon />;
 
-  // Shared MenuList styling
   const listProps = {
     bg: menuBg,
     border: '1px solid',
@@ -92,13 +94,12 @@ export function SettingsControls() {
     zIndex: 'popover',
   };
 
-  // Row for each menu item — check at the right, no layout shift
   const Row = ({ label, icon, isActive, onClick }) => (
     <MenuItem
       onClick={onClick}
       borderRadius="lg"
       bg="transparent"
-      color={btnColor}
+      color={buttonColor}
       fontSize="sm"
       px={3}
       py={2}
@@ -116,7 +117,6 @@ export function SettingsControls() {
   );
 
   return (
-    // Pill-shaped container that groups both controls — visually obvious
     <HStack
       spacing={0}
       bg={containerBg}
@@ -127,7 +127,6 @@ export function SettingsControls() {
       overflow="hidden"
       h="32px"
     >
-      {/* ── Language Menu ───────────────────────────────── */}
       <Menu placement="bottom-end" isLazy>
         <MenuButton
           as={Button}
@@ -136,42 +135,49 @@ export function SettingsControls() {
           h="100%"
           px={3}
           gap={1}
-          color={btnColor}
+          color={buttonColor}
           borderRadius="0"
           fontWeight="600"
           fontSize="xs"
-          _hover={{ bg: btnHover }}
-          _active={{ bg: btnHover }}
+          _hover={{ bg: buttonHover }}
+          _active={{ bg: buttonHover }}
           rightIcon={<ChevronDownIcon boxSize={3} />}
           leftIcon={<MdTranslate />}
+          aria-label={t('settings.languageMenuAria')}
         >
-          {isPt ? 'pt-BR' : 'en-US'}
+          {isPt ? t('settings.languageCodePt') : t('settings.languageCodeEn')}
         </MenuButton>
 
         <MenuList {...listProps}>
-          {/* section label */}
-          <Text px={3} pt={1} pb={1} fontSize="11px" fontWeight="600" color={labelColor} textTransform="uppercase" letterSpacing="wider">
+          <Text
+            px={3}
+            pt={1}
+            pb={1}
+            fontSize="11px"
+            fontWeight="600"
+            color={labelColor}
+            textTransform="uppercase"
+            letterSpacing="wider"
+          >
             {t('settings.language')}
           </Text>
           <Row
-            label="Português (BR)"
-            icon={<Text fontSize="sm">🇧🇷</Text>}
+            label={t('settings.languagePtBr')}
+            icon={<Text fontSize="xs" fontWeight="bold">PT</Text>}
             isActive={isPt}
             onClick={() => applyLanguage('pt')}
           />
           <Row
-            label="English (US)"
-            icon={<Text fontSize="sm">🇺🇸</Text>}
+            label={t('settings.languageEnUs')}
+            icon={<Text fontSize="xs" fontWeight="bold">EN</Text>}
             isActive={!isPt}
             onClick={() => applyLanguage('en')}
           />
         </MenuList>
       </Menu>
 
-      {/* vertical separator */}
       <Divider orientation="vertical" borderColor={containerBorder} h="16px" />
 
-      {/* ── Theme Menu ──────────────────────────────────── */}
       <Menu placement="bottom-end" isLazy>
         <MenuButton
           as={Button}
@@ -180,21 +186,30 @@ export function SettingsControls() {
           h="100%"
           px={3}
           gap={1}
-          color={btnColor}
+          color={buttonColor}
           borderRadius="0"
           fontWeight="500"
           fontSize="xs"
-          _hover={{ bg: btnHover }}
-          _active={{ bg: btnHover }}
+          _hover={{ bg: buttonHover }}
+          _active={{ bg: buttonHover }}
           rightIcon={<ChevronDownIcon boxSize={3} />}
           leftIcon={themeIcon}
+          aria-label={t('settings.themeMenuAria')}
         >
           {themeLabel}
         </MenuButton>
 
         <MenuList {...listProps}>
-          {/* section label */}
-          <Text px={3} pt={1} pb={1} fontSize="11px" fontWeight="600" color={labelColor} textTransform="uppercase" letterSpacing="wider">
+          <Text
+            px={3}
+            pt={1}
+            pb={1}
+            fontSize="11px"
+            fontWeight="600"
+            color={labelColor}
+            textTransform="uppercase"
+            letterSpacing="wider"
+          >
             {t('settings.theme')}
           </Text>
           <Row
@@ -209,7 +224,7 @@ export function SettingsControls() {
             isActive={themePreference === 'dark'}
             onClick={() => applyTheme('dark')}
           />
-          <MenuDivider borderColor={divColor} my={1} />
+          <MenuDivider borderColor={dividerColor} my={1} />
           <Row
             label={t('settings.systemMode')}
             icon={<MdComputer />}

@@ -83,6 +83,7 @@ export function RepoList({ username }) {
             value={repoQuery}
             onChange={(e) => setRepoQuery(e.target.value)}
             placeholder={t('filters.repoNamePlaceholder')}
+            aria-label={t('filters.repoNameAria')}
             {...controlStyles}
           />
         </InputGroup>
@@ -93,6 +94,7 @@ export function RepoList({ username }) {
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
           w={{ base: '100%', md: '220px' }}
+          aria-label={t('filters.languageAria')}
           {...controlStyles}
         >
           <option value="all" style={{ background: optionBg, color: optionColor }}>
