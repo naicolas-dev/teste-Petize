@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react';
 import { fetchGitHubUser } from '../services/github.service';
 
@@ -30,3 +31,4 @@ export function useGitHubUser(username) {
 
   return { user, loading, error };
 }
+

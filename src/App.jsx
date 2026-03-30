@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
@@ -11,6 +13,12 @@ import ProfilePage from './pages/ProfilePage';
  *   *              → redirect to home
  */
 function App() {
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    document.title = t('app.title');
+  }, [t, i18n.language]);
+
   return (
     <BrowserRouter>
       <Routes>
