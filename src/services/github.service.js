@@ -48,12 +48,22 @@ export async function fetchGitHubUser(username) {
  * Endpoint: GET /users/{username}/repos
  *
  * @param {string} username - The GitHub username
- * @param {{ perPage?: number, sort?: 'created'|'updated'|'pushed'|'full_name' }} [options]
+ * @param {{
+ *   perPage?: number,
+ *   page?: number,
+ *   sort?: 'created'|'updated'|'pushed'|'full_name',
+ *   direction?: 'asc'|'desc'
+ * }} [options]
  * @returns {Promise<import('../schemas/githubRepo.schema').GitHubRepoList>}
  */
 export async function fetchGitHubUserRepos(username, options = {}) {
-  const { perPage = 30, sort = 'updated' } = options;
-  const query = new URLSearchParams({ per_page: String(perPage), sort });
+  const { perPage = 10, page = 1, sort = 'updated', direction = 'desc' } = options;
+  const query = new URLSearchParams({
+    per_page: String(perPage),
+    page:     String(page),
+    sort,
+    direction,
+  });
 
   const data = await githubFetch(
     `/users/${encodeURIComponent(username)}/repos?${query}`
