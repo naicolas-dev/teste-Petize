@@ -1,19 +1,25 @@
-import { Box, Heading, Text, Badge, VStack } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
+import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
+
+/**
+ * App — root component.
+ * Declares all application routes:
+ *   /              → HomePage   (GitHub user search)
+ *   /profile/:username → ProfilePage (dynamic user profile)
+ *   *              → redirect to home
+ */
 function App() {
-  const { t } = useTranslation();
-
   return (
-    <Box minH="100vh" bg="gray.50" display="flex" alignItems="center" justifyContent="center">
-      <VStack spacing={4}>
-        <Heading size="xl" color="purple.600">
-          {t('app.title')}
-        </Heading>
-        <Text color="gray.500">ChakraUI v2 + i18next + Zod — ready to build 🚀</Text>
-        <Badge colorScheme="green">Setup complete</Badge>
-      </VStack>
-    </Box>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
+        {/* Catch-all: unknown routes redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

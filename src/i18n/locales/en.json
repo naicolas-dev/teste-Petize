@@ -6,5 +6,11 @@
     "loading": "Loading...",
     "error": "An error occurred.",
     "retry": "Try again"
+  },
+  "home": {
+    "title": "Search GitHub Users"
+  },
+  "profile": {
+    "title": "{{username}}'s Profile"
   }
 }
