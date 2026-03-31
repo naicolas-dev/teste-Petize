@@ -34,6 +34,7 @@ export function SearchBar({
   compactMobile = false,
   hideButton = false,
   inputSize = 'lg',
+  variant = 'outline',
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ export function SearchBar({
           </InputLeftElement>
           <Input
             id="search-username-input"
-            variant="outline"
+            variant={variant}
             size={inputSize}
             placeholder={t('home.searchPlaceholder')}
             value={query}
@@ -106,6 +107,10 @@ export function SearchBar({
               borderColor: 'blue.400',
               boxShadow: '0 0 0 1px var(--chakra-colors-blue-400)',
             }}
+            bg={variant === 'filled' ? 'gray.50' : undefined}
+            _dark={{
+              bg: variant === 'filled' ? 'whiteAlpha.50' : undefined,
+            }}
           />
 
           {compactMobile && (
@@ -118,7 +123,7 @@ export function SearchBar({
                 id="search-submit-icon-button"
                 type="submit"
                 aria-label={t('home.searchButtonAria')}
-                icon={<SearchIcon />}
+                icon={<SearchIcon opacity={0.6} />}
                 size="xs"
                 variant="ghost"
                 isLoading={isSubmitting}

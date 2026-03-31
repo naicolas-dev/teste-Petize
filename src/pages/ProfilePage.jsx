@@ -49,9 +49,6 @@ export function ProfilePage() {
 
   const [searchError, setSearchError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(username ?? '');
-  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(true);
-  const manualRevealUntilRef = useRef(0);
-  const lastScrollYRef = useRef(0);
 
   const normalizedUsername = useMemo(
     () => String(username ?? '').trim().toLowerCase(),
@@ -69,39 +66,6 @@ export function ProfilePage() {
 
   const suggestions = useGitHubUserSuggestions(searchQuery);
 
-  useEffect(() => {
-    const onScroll = () => {
-      const isMobile = window.matchMedia('(max-width: 47.99em)').matches;
-      if (!isMobile) return;
-
-      const currentY = window.scrollY || 0;
-      const delta = Math.abs(currentY - lastScrollYRef.current);
-      lastScrollYRef.current = currentY;
-
-      if (currentY <= 0) return;
-      if (delta < 2) return;
-
-      if (Date.now() < manualRevealUntilRef.current) {
-        return;
-      }
-
-      setIsMobileSearchVisible((prevVisible) => (prevVisible ? false : prevVisible));
-
-      if (document.activeElement instanceof HTMLInputElement) {
-        document.activeElement.blur();
-      }
-    };
-
-    lastScrollYRef.current = window.scrollY || 0;
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const revealMobileSearch = () => {
-    manualRevealUntilRef.current = Date.now() + 1200;
-    lastScrollYRef.current = window.scrollY || 0;
-    setIsMobileSearchVisible(true);
-  };
 
   const openProfile = (nextUsername) => {
     navigate(`/profile/${encodeURIComponent(nextUsername)}`);
@@ -215,6 +179,7 @@ export function ProfilePage() {
         compactMobile={compactMobile}
         hideButton={true}
         inputSize="sm"
+        variant={compactMobile ? 'filled' : 'outline'}
       />
 
       {searchError && (
@@ -346,65 +311,48 @@ export function ProfilePage() {
         zIndex={100}
       >
         <Container maxW="6xl">
-          <Box display={{ base: 'block', md: 'none' }} py={3}>
-            <Flex align="center" justify="space-between" mb={3}>
-              <Button
+          <Box display={{ base: 'block', md: 'none' }} py={2}>
+            <Flex align="center" gap={2}>
+              <IconButton
                 as={RouterLink}
                 to="/"
+                icon={<ArrowBackIcon />}
+                aria-label={t('common.back')}
                 variant="ghost"
                 size="sm"
-                leftIcon={<ArrowBackIcon />}
                 color="gray.600"
                 _dark={{ color: 'gray.300' }}
-                _hover={{ bg: 'gray.100', color: '#191919', _dark: { bg: 'gray.800', color: '#DEDEDE' } }}
-              >
-                {t('common.back')}
-              </Button>
+              />
 
-              <HStack spacing={2}>
-                <IconButton
-                  icon={<SearchIcon />}
-                  aria-label={t('profile.openSearchAria')}
-                  variant="ghost"
-                  size="sm"
-                  onClick={revealMobileSearch}
-                  display={isMobileSearchVisible ? 'none' : 'flex'}
-                />
+              <Box flex={1}>
+                {renderSearchArea(true)}
+              </Box>
 
-                <Popover placement="bottom-end" isLazy>
-                  <PopoverTrigger>
-                    <IconButton
-                      icon={<SettingsIcon />}
-                      aria-label={t('settings.openMenuAria')}
-                      variant="ghost"
-                      size="sm"
-                    />
-                  </PopoverTrigger>
-                  <PopoverContent
-                    w="auto"
-                    minW="0"
-                    borderRadius="xl"
-                    borderColor="#D0D7DE"
-                    _dark={{ bg: '#161B22', borderColor: '#30363D' }}
-                  >
-                    <PopoverArrow />
-                    <PopoverBody p={2}>
-                      <SettingsControls />
-                    </PopoverBody>
-                  </PopoverContent>
-                </Popover>
-              </HStack>
+              <Popover placement="bottom-end" border="none" isLazy>
+                <PopoverTrigger>
+                  <IconButton
+                    icon={<SettingsIcon />}
+                    aria-label={t('settings.openMenuAria')}
+                    variant="ghost"
+                    size="sm"
+                    color="gray.600"
+                    _dark={{ color: 'gray.300' }}
+                  />
+                </PopoverTrigger>
+                <PopoverContent
+                  w="auto"
+                  minW="0"
+                  borderRadius="xl"
+                  borderColor="#D0D7DE"
+                  _dark={{ bg: '#161B22', borderColor: '#30363D' }}
+                >
+                  <PopoverArrow />
+                  <PopoverBody p={2}>
+                    <SettingsControls />
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
             </Flex>
-
-            <Box
-              maxH={isMobileSearchVisible ? '560px' : '0px'}
-              opacity={isMobileSearchVisible ? 1 : 0}
-              overflow="hidden"
-              pointerEvents={isMobileSearchVisible ? 'auto' : 'none'}
-              transition="max-height 0.24s ease, opacity 0.2s ease"
-            >
-              {renderSearchArea(true)}
-            </Box>
           </Box>
 
           <Grid
