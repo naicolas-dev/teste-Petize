@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -202,6 +202,7 @@ export function HomePage() {
               onError={() => setSearchError('empty')}
               onSearch={handleSearch}
               onQueryChange={handleQueryChange}
+              hideButton={true}
             />
 
             {showSuggestionsLoading && (
