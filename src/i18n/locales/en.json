@@ -59,7 +59,9 @@
     "noRepos": "This user has no public repositories.",
     "noReposFiltered": "No repositories match the current filters.",
     "noMoreRepos": "All repositories loaded.",
-    "organization": "Organization"
+    "organization": "Organization",
+    "contact": "Contact",
+    "openToWork": "Open to work"
   },
   "filters": {
     "repoNamePlaceholder": "Filter by repository name...",
@@ -84,7 +86,12 @@
   "repo": {
     "stars": "Stars",
     "forks": "Forks",
-    "archived": "Archived"
+    "archived": "Archived",
+    "updatedToday": "Updated today",
+    "updatedYesterday": "Updated yesterday",
+    "updatedDaysAgo": "Updated {{count}} days ago",
+    "updatedMonthsAgo": "Updated {{count}} month ago",
+    "updatedYearsAgo": "Updated {{count}} year ago"
   },
   "error": {
     "userNotFound": "User not found",

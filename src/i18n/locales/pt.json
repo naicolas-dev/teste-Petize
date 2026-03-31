@@ -59,7 +59,9 @@
     "noRepos": "Este usuário não possui repositórios públicos.",
     "noReposFiltered": "Nenhum repositorio corresponde aos filtros atuais.",
     "noMoreRepos": "Todos os repositórios foram carregados.",
-    "organization": "Organização"
+    "organization": "Organização",
+    "contact": "Contato",
+    "openToWork": "Aberto a novas oportunidades"
   },
   "filters": {
     "repoNamePlaceholder": "Filtrar por nome do repositorio...",
@@ -84,7 +86,12 @@
   "repo": {
     "stars": "Estrelas",
     "forks": "Forks",
-    "archived": "Arquivado"
+    "archived": "Arquivado",
+    "updatedToday": "Atualizado hoje",
+    "updatedYesterday": "Atualizado ontem",
+    "updatedDaysAgo": "Atualizado há {{count}} dias",
+    "updatedMonthsAgo": "Atualizado há {{count}} mes",
+    "updatedYearsAgo": "Atualizado há {{count}} ano"
   },
   "error": {
     "userNotFound": "Usuário não encontrado",
