@@ -13,7 +13,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { BsTwitterX, BsGlobe, BsBuilding, BsGeoAlt, BsEnvelope } from 'react-icons/bs';
+import { BsTwitterX, BsGlobe, BsBuilding, BsGeoAlt, BsEnvelope, BsLink45Deg } from 'react-icons/bs';
 import { GoPeople, GoRepo, GoLink } from 'react-icons/go';
 import { AiOutlineHeart } from 'react-icons/ai';
 import { MdWorkOutline } from 'react-icons/md';
@@ -72,24 +72,26 @@ function normalizeBlogUrl(blog) {
 function InfoRow({ icon, value, href, textMuted, linkColor }) {
   if (!value) return null;
 
+  const content = (
+    <HStack spacing={2} fontSize="sm">
+      <Box flexShrink={0} color={textMuted} display="flex" alignItems="center">
+        {icon}
+      </Box>
+      <Text noOfLines={1} color={href ? linkColor : textMuted}>
+        {value}
+      </Text>
+    </HStack>
+  );
+
   if (href) {
     return (
-      <Link href={href} isExternal _hover={{ textDecoration: 'none' }}>
-        <HStack spacing={2} fontSize="sm" color={linkColor} _hover={{ textDecoration: 'underline' }}>
-          <Box flexShrink={0} color={textMuted}>{icon}</Box>
-          <Text noOfLines={1}>{value}</Text>
-          <ExternalLinkIcon boxSize={3} opacity={0.6} />
-        </HStack>
+      <Link href={href} isExternal _hover={{ textDecoration: 'underline' }}>
+        {content}
       </Link>
     );
   }
 
-  return (
-    <HStack spacing={2} fontSize="sm">
-      <Box flexShrink={0} color={textMuted}>{icon}</Box>
-      <Text noOfLines={1} color={textMuted}>{value}</Text>
-    </HStack>
-  );
+  return content;
 }
 
 /**
@@ -107,16 +109,11 @@ export function UserCard({ user }) {
     ? `https://twitter.com/${user.twitter_username}`
     : null;
 
-  // URLs found inside the bio text
-  const bioLinks = extractLinksFromBio(user.bio);
-
   const cardBg      = useColorModeValue('#FFFFFF', '#161B22');
   const borderColor = useColorModeValue('#D0D7DE', '#30363D');
   const textMain    = useColorModeValue('#1F2328', '#E6EDF3');
   const textMuted   = useColorModeValue('#57606A', '#8B949E');
-  const dividerCol  = useColorModeValue('#D0D7DE', '#30363D');
   const linkColor   = useColorModeValue('#0969DA', '#58A6FF');
-  const statBg      = useColorModeValue('#F6F8FA', '#21262D');
 
   return (
     <Box
@@ -130,157 +127,83 @@ export function UserCard({ user }) {
       w="100%"
       position="sticky"
       top="90px"
+      p={{ base: 4, md: 5 }}
     >
-      {/* ── Header: avatar + name inline ─────────────────────────────── */}
-      <Flex align="center" gap={3} p={{ base: 4, md: 5 }} pb={3}>
-        <Avatar
-          src={user.avatar_url}
-          name={user.name ?? user.login}
-          size="md"
-          borderRadius="full"
-          border="2px solid"
-          borderColor={borderColor}
-          flexShrink={0}
-        />
-        <VStack spacing={0} align="flex-start" minW={0}>
-          {user.name && (
-            <Heading
-              as="h1"
-              size="sm"
-              color={textMain}
-              fontWeight="700"
+      <VStack spacing={4} align="stretch">
+        {/* ── Header: Avatar + (Name & Username) side-by-side ────────── */}
+        <HStack spacing={4} align="center">
+          <Avatar
+            src={user.avatar_url}
+            name={user.name ?? user.login}
+            size="lg"
+            borderRadius="full"
+            flexShrink={0}
+          />
+          <VStack spacing={0} align="flex-start" minW={0}>
+            {user.name && (
+              <Heading
+                as="h1"
+                fontSize="xl"
+                color={textMain}
+                fontWeight="700"
+                noOfLines={1}
+                lineHeight="1.2"
+              >
+                {user.name}
+              </Heading>
+            )}
+            <Text
+              fontSize="md"
+              color={textMuted}
               noOfLines={1}
             >
-              {user.name}
-            </Heading>
-          )}
-          <Link
-            href={user.html_url}
-            isExternal
-            fontSize="sm"
-            color={textMuted}
-            _hover={{ color: linkColor, textDecoration: 'none' }}
-            noOfLines={1}
-          >
-            @{user.login}
-          </Link>
-          {user.type === 'Organization' && (
-            <Badge colorScheme="purple" mt={0.5} fontSize="2xs">
-              {t('profile.organization')}
-            </Badge>
-          )}
-        </VStack>
-      </Flex>
+              @{user.login}
+            </Text>
+          </VStack>
+        </HStack>
 
-      <Divider borderColor={dividerCol} />
-
-      {/* ── Body ─────────────────────────────────────────────────────── */}
-      <VStack spacing={4} align="stretch" p={{ base: 4, md: 5 }}>
-
-        {/* Bio with clickable links */}
+        {/* ── Bio ────────────────────────────────────────────────────── */}
         {user.bio && (
           <Text fontSize="sm" color={textMuted} lineHeight="tall">
             <BioWithLinks bio={user.bio} linkColor={linkColor} />
           </Text>
         )}
 
-        {/* ── Stats block ──────────────────────────────────────────── */}
-        <Flex gap={2} flexWrap="wrap">
+        {/* ── Stats and Info Rows (Unified List Layout) ──────────────── */}
+        <VStack spacing={2} align="stretch">
           {/* Followers */}
-          <Flex
-            flex={1}
-            minW="80px"
-            align="center"
-            justify="center"
-            direction="column"
-            bg={statBg}
-            borderRadius="lg"
-            border="1px solid"
-            borderColor={borderColor}
-            py={2}
-            px={3}
-            gap={0}
-          >
-            <HStack spacing={1} color={textMuted}>
-              <GoPeople size={12} />
-              <Text fontSize="xs" color={textMuted}>{t('profile.followers')}</Text>
-            </HStack>
-            <Text fontWeight="700" fontSize="sm" color={textMain}>
-              {user.followers.toLocaleString()}
+          <HStack spacing={2} fontSize="sm">
+            <Box color={textMuted}><GoPeople size={16} /></Box>
+            <Text color={textMuted}>
+              <Text as="span" fontWeight="600" color={textMain}>{user.followers.toLocaleString()}</Text> {t('profile.followers')}
             </Text>
-          </Flex>
+          </HStack>
 
           {/* Following */}
-          <Flex
-            flex={1}
-            minW="80px"
-            align="center"
-            justify="center"
-            direction="column"
-            bg={statBg}
-            borderRadius="lg"
-            border="1px solid"
-            borderColor={borderColor}
-            py={2}
-            px={3}
-            gap={0}
-          >
-            <HStack spacing={1} color={textMuted}>
-              <AiOutlineHeart size={12} />
-              <Text fontSize="xs" color={textMuted}>{t('profile.following')}</Text>
-            </HStack>
-            <Text fontWeight="700" fontSize="sm" color={textMain}>
-              {user.following.toLocaleString()}
+          <HStack spacing={2} fontSize="sm">
+            <Box color={textMuted}><AiOutlineHeart size={16} /></Box>
+            <Text color={textMuted}>
+              <Text as="span" fontWeight="600" color={textMain}>{user.following.toLocaleString()}</Text> {t('profile.following')}
             </Text>
-          </Flex>
+          </HStack>
 
-          {/* Public Repos */}
-          <Flex
-            flex={1}
-            minW="80px"
-            align="center"
-            justify="center"
-            direction="column"
-            bg={statBg}
-            borderRadius="lg"
-            border="1px solid"
-            borderColor={borderColor}
-            py={2}
-            px={3}
-            gap={0}
-          >
-            <HStack spacing={1} color={textMuted}>
-              <GoRepo size={12} />
-              <Text fontSize="xs" color={textMuted}>{t('profile.repos')}</Text>
-            </HStack>
-            <Text fontWeight="700" fontSize="sm" color={textMain}>
-              {user.public_repos.toLocaleString()}
-            </Text>
-          </Flex>
-        </Flex>
+          {/* Spacing before general info */}
+          <Box pt={2} />
 
-        {/* ── Info rows ────────────────────────────────────────────── */}
-        <VStack spacing={2} align="stretch">
           <InfoRow
-            icon={<BsBuilding size={14} />}
+            icon={<BsBuilding size={16} />}
             value={user.company?.replace(/^@/, '')}
             textMuted={textMuted}
             linkColor={linkColor}
           />
           <InfoRow
-            icon={<BsGeoAlt size={14} />}
+            icon={<BsGeoAlt size={16} />}
             value={user.location}
             textMuted={textMuted}
             linkColor={linkColor}
           />
           <InfoRow
-            icon={<MdWorkOutline size={14} />}
-            value={user.hireable ? t('profile.openToWork') : null}
-            textMuted={textMuted}
-            linkColor={linkColor}
-          />
-          <InfoRow
-            icon={<BsEnvelope size={14} />}
+            icon={<BsEnvelope size={16} />}
             value={user.email}
             href={user.email ? `mailto:${user.email}` : null}
             textMuted={textMuted}
@@ -288,7 +211,7 @@ export function UserCard({ user }) {
           />
           {blogUrl && (
             <InfoRow
-              icon={<BsGlobe size={14} />}
+              icon={<BsLink45Deg size={16} />}
               value={blogUrl.replace(/^https?:\/\//, '')}
               href={blogUrl}
               textMuted={textMuted}
@@ -304,23 +227,7 @@ export function UserCard({ user }) {
               linkColor={linkColor}
             />
           )}
-
-          {/* Extra links extracted from bio */}
-          {bioLinks
-            .filter(l => l !== blogUrl && !l.includes('twitter.com'))
-            .map((link) => (
-              <InfoRow
-                key={link}
-                icon={<GoLink size={14} />}
-                value={link.replace(/^https?:\/\//, '')}
-                href={link}
-                textMuted={textMuted}
-                linkColor={linkColor}
-              />
-            ))
-          }
         </VStack>
-
       </VStack>
     </Box>
   );
