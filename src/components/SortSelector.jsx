@@ -1,53 +1,75 @@
 import { useTranslation } from 'react-i18next';
 import {
   Box,
-  Select,
   Flex,
   Text,
   Stack,
   useColorModeValue,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
 } from '@chakra-ui/react';
+import { ChevronDownIcon, CheckIcon } from '@chakra-ui/icons';
 
 /** Sort field options as expected by the GitHub API */
 const SORT_OPTIONS = [
-  { value: 'pushed',    labelKey: 'sort.pushed'     },
-  { value: 'created',   labelKey: 'sort.created'   },
-  { value: 'full_name', labelKey: 'sort.full_name'  },
+  { value: 'pushed', labelKey: 'sort.pushed' },
+  { value: 'created', labelKey: 'sort.created' },
+  { value: 'full_name', labelKey: 'sort.full_name' },
 ];
-
-
 
 /**
  * SortSelector — a compound control for choosing sort field + direction.
- *
- * Props:
- *   sort         {string}   current sort field value
- *   direction    {string}   current direction value
- *   onSortChange    {fn}    called with new sort field string
- *   onDirectionChange {fn}  called with new direction string
  */
 export function SortSelector({ sort, direction, onSortChange, onDirectionChange }) {
   const { t } = useTranslation();
-  const optionBg = useColorModeValue('#FFFFFF', '#0D1117');
-  const optionColor = useColorModeValue('#1F2328', '#E6EDF3');
 
   const isNameSort = sort === 'full_name';
   const directionOptions = [
     { value: 'desc', labelKey: isNameSort ? 'sort.name_desc' : 'sort.date_desc' },
-    { value: 'asc',  labelKey: isNameSort ? 'sort.name_asc'  : 'sort.date_asc'  },
+    { value: 'asc', labelKey: isNameSort ? 'sort.name_asc' : 'sort.date_asc' },
   ];
 
-  const selectStyles = {
-    bg: '#FFFFFF',
-    borderColor: '#D0D7DE',
+  // Colors and styles consistent with SettingsControls.jsx
+  const buttonBg = useColorModeValue('#FFFFFF', '#0D1117');
+  const buttonBorder = useColorModeValue('#D0D7DE', '#30363D');
+  const buttonHover = useColorModeValue('#F6F8FA', '#21262D');
+  const textColor = useColorModeValue('#1F2328', '#E6EDF3');
+  const menuBg = useColorModeValue('#FFFFFF', '#161B22');
+  const menuShadow = useColorModeValue(
+    '0 8px 24px rgba(140,149,159,0.2)',
+    '0 8px 24px rgba(0,0,0,0.6)'
+  );
+  const itemHover = useColorModeValue('#F6F8FA', '#21262D');
+  const activeColor = '#0969DA';
+
+  const commonMenuButtonStyles = {
+    bg: buttonBg,
     border: '1px solid',
-    color: '#1F2328',
-    _dark: { bg: '#0D1117', borderColor: '#30363D', color: '#E6EDF3' },
+    borderColor: buttonBorder,
+    color: textColor,
     borderRadius: 'lg',
     fontSize: 'sm',
-    _hover: { borderColor: '#8C959F' },
-    _focus: { borderColor: '#0969DA', boxShadow: '0 0 0 1px #0969DA' },
+    fontWeight: 'medium',
+    h: '32px',
+    _hover: { bg: buttonHover, borderColor: '#8C959F' },
+    _active: { bg: buttonHover },
   };
+
+  const commonMenuListStyles = {
+    bg: menuBg,
+    borderColor: buttonBorder,
+    boxShadow: menuShadow,
+    borderRadius: 'xl',
+    minW: '160px',
+    p: 1,
+    zIndex: 'popover',
+  };
+
+  const currentSortLabel = t(SORT_OPTIONS.find(o => o.value === sort)?.labelKey || '');
+  const currentDirectionLabel = t(directionOptions.find(o => o.value === direction)?.labelKey || '');
 
   return (
     <Flex
@@ -55,7 +77,6 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
       gap={4}
       direction={{ base: 'column', sm: 'row' }}
       bg="transparent"
-      _dark={{ bg: 'transparent' }}
       pb={4}
       pt={2}
     >
@@ -64,21 +85,40 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
         <Text fontSize="sm" color="gray.500" _dark={{ color: 'gray.400' }} fontWeight="medium" whiteSpace="nowrap">
           {t('sort.label')}
         </Text>
-        <Select
-          id="sort-field-select"
-          size="sm"
-          value={sort}
-          onChange={(e) => onSortChange(e.target.value)}
-          w="160px"
-          aria-label={t('sort.fieldAria')}
-          {...selectStyles}
-        >
-          {SORT_OPTIONS.map(({ value, labelKey }) => (
-            <option key={value} value={value} style={{ background: optionBg, color: optionColor }}>
-              {t(labelKey)}
-            </option>
-          ))}
-        </Select>
+
+        <Menu autoSelect={false} isLazy>
+          <MenuButton
+            as={Button}
+            size="sm"
+            variant="outline"
+            rightIcon={<ChevronDownIcon boxSize={4} opacity={0.6} />}
+            textAlign="left"
+            w="160px"
+            {...commonMenuButtonStyles}
+          >
+            <Text noOfLines={1}>{currentSortLabel}</Text>
+          </MenuButton>
+          <MenuList {...commonMenuListStyles}>
+            {SORT_OPTIONS.map(({ value, labelKey }) => (
+              <MenuItem
+                key={value}
+                onClick={() => onSortChange(value)}
+                borderRadius="lg"
+                bg="transparent"
+                _hover={{ bg: itemHover }}
+                _focus={{ bg: itemHover }}
+                fontSize="sm"
+                px={3}
+                py={2}
+              >
+                <Flex align="center" justify="space-between" w="full">
+                  <Text>{t(labelKey)}</Text>
+                  {sort === value && <CheckIcon boxSize={3} color={activeColor} />}
+                </Flex>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
       </Stack>
 
       {/* Direction */}
@@ -86,22 +126,42 @@ export function SortSelector({ sort, direction, onSortChange, onDirectionChange 
         <Text fontSize="sm" color="gray.500" _dark={{ color: 'gray.400' }} fontWeight="medium" whiteSpace="nowrap">
           {t('sort.direction')}
         </Text>
-        <Select
-          id="sort-direction-select"
-          size="sm"
-          value={direction}
-          onChange={(e) => onDirectionChange(e.target.value)}
-          w="130px"
-          aria-label={t('sort.directionAria')}
-          {...selectStyles}
-        >
-          {directionOptions.map(({ value, labelKey }) => (
-            <option key={value} value={value} style={{ background: optionBg, color: optionColor }}>
-              {t(labelKey)}
-            </option>
-          ))}
-        </Select>
+
+        <Menu autoSelect={false} isLazy>
+          <MenuButton
+            as={Button}
+            size="sm"
+            variant="outline"
+            rightIcon={<ChevronDownIcon boxSize={4} opacity={0.6} />}
+            textAlign="left"
+            w="140px"
+            {...commonMenuButtonStyles}
+          >
+            <Text noOfLines={1}>{currentDirectionLabel}</Text>
+          </MenuButton>
+          <MenuList {...commonMenuListStyles}>
+            {directionOptions.map(({ value, labelKey }) => (
+              <MenuItem
+                key={value}
+                onClick={() => onDirectionChange(value)}
+                borderRadius="lg"
+                bg="transparent"
+                _hover={{ bg: itemHover }}
+                _focus={{ bg: itemHover }}
+                fontSize="sm"
+                px={3}
+                py={2}
+              >
+                <Flex align="center" justify="space-between" w="full">
+                  <Text>{t(labelKey)}</Text>
+                  {direction === value && <CheckIcon boxSize={3} color={activeColor} />}
+                </Flex>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
       </Stack>
     </Flex>
   );
 }
+

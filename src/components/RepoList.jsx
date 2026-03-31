@@ -13,10 +13,14 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Select,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { SearchIcon, ChevronDownIcon, CheckIcon } from '@chakra-ui/icons';
 import { useGitHubRepos } from '../hooks/useGitHubRepos';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { SortSelector } from './SortSelector';
@@ -25,17 +29,12 @@ import { RepoSkeleton } from './LoadingSkeleton';
 
 /**
  * RepoList - full repo listing with sort controls and infinite scroll.
- *
- * @param {{ username: string }} props
  */
 export function RepoList({ username }) {
   const { t } = useTranslation();
 
-  // Existing sort state remains unchanged.
   const [sort, setSort] = useState('pushed');
   const [direction, setDirection] = useState('desc');
-
-  // New filters.
   const [repoQuery, setRepoQuery] = useState('');
   const [language, setLanguage] = useState('all');
 
@@ -49,20 +48,63 @@ export function RepoList({ username }) {
   const sentinelRef = useIntersectionObserver(loadMore, !loading && hasMore);
   const hasActiveFilters = repoQuery.trim().length > 0 || language !== 'all';
 
+  // Styles consistent with SortSelector.jsx
+  const buttonBg = useColorModeValue('#FFFFFF', '#0D1117');
+  const buttonBorder = useColorModeValue('#D0D7DE', '#30363D');
+  const buttonHover = useColorModeValue('#F6F8FA', '#21262D');
+  const textColor = useColorModeValue('#1F2328', '#E6EDF3');
+  const menuBg = useColorModeValue('#FFFFFF', '#161B22');
+  const menuShadow = useColorModeValue(
+    '0 8px 24px rgba(140,149,159,0.2)',
+    '0 8px 24px rgba(0,0,0,0.6)'
+  );
+  const itemHover = useColorModeValue('#F6F8FA', '#21262D');
+  const activeColor = '#0969DA';
+
   const controlStyles = {
-    bg: '#FFFFFF',
-    borderColor: '#D0D7DE',
+    bg: buttonBg,
+    borderColor: buttonBorder,
     border: '1px solid',
-    color: '#1F2328',
-    _dark: { bg: '#0D1117', borderColor: '#30363D', color: '#E6EDF3' },
+    color: textColor,
     borderRadius: 'lg',
     fontSize: 'sm',
     _hover: { borderColor: '#8C959F' },
     _focus: { borderColor: '#0969DA', boxShadow: '0 0 0 1px #0969DA' },
   };
 
-  const optionBg = useColorModeValue('#FFFFFF', '#0D1117');
-  const optionColor = useColorModeValue('#1F2328', '#E6EDF3');
+  const menuButtonStyles = {
+    ...controlStyles,
+    fontWeight: 'medium',
+    h: '32px',
+    _hover: { ...controlStyles._hover, bg: buttonHover },
+    _active: { bg: buttonHover },
+  };
+
+  const menuListStyles = {
+    bg: menuBg,
+    borderColor: buttonBorder,
+    boxShadow: menuShadow,
+    borderRadius: 'xl',
+    minW: '200px',
+    maxH: '300px',
+    overflowY: 'auto',
+    p: 1,
+    zIndex: 'popover',
+    // Custom Scrollbar for better UI
+    sx: {
+      '&::-webkit-scrollbar': { width: '4px' },
+      '&::-webkit-scrollbar-track': { background: 'transparent' },
+      '&::-webkit-scrollbar-thumb': { 
+        background: useColorModeValue('#D0D7DE', '#30363D'), 
+        borderRadius: '4px' 
+      },
+      '&::-webkit-scrollbar-thumb:hover': { 
+        background: useColorModeValue('#8C959F', '#484F58') 
+      },
+    },
+  };
+
+  const currentLanguageLabel = language === 'all' ? t('filters.languageAll') : language;
 
   return (
     <Box>
@@ -84,29 +126,61 @@ export function RepoList({ username }) {
             onChange={(e) => setRepoQuery(e.target.value)}
             placeholder={t('filters.repoNamePlaceholder')}
             aria-label={t('filters.repoNameAria')}
+            h="32px"
             {...controlStyles}
           />
         </InputGroup>
 
-        <Select
-          id="repo-language-filter-select"
-          size="sm"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          w={{ base: '100%', md: '220px' }}
-          aria-label={t('filters.languageAria')}
-          {...controlStyles}
-        >
-          <option value="all" style={{ background: optionBg, color: optionColor }}>
-            {t('filters.languageAll')}
-          </option>
-          {languages.map((lang) => (
-            <option key={lang} value={lang} style={{ background: optionBg, color: optionColor }}>
-              {lang}
-            </option>
-          ))}
-        </Select>
+        <Menu autoSelect={false} isLazy>
+          <MenuButton
+            as={Button}
+            size="sm"
+            variant="outline"
+            rightIcon={<ChevronDownIcon boxSize={4} opacity={0.6} />}
+            textAlign="left"
+            w={{ base: '100%', md: '220px' }}
+            {...menuButtonStyles}
+          >
+            <Text noOfLines={1}>{currentLanguageLabel}</Text>
+          </MenuButton>
+          <MenuList {...menuListStyles}>
+            <MenuItem
+              onClick={() => setLanguage('all')}
+              borderRadius="lg"
+              bg="transparent"
+              _hover={{ bg: itemHover }}
+              _focus={{ bg: itemHover }}
+              fontSize="sm"
+              px={3}
+              py={2}
+            >
+              <Flex align="center" justify="space-between" w="full">
+                <Text>{t('filters.languageAll')}</Text>
+                {language === 'all' && <CheckIcon boxSize={3} color={activeColor} />}
+              </Flex>
+            </MenuItem>
+            {languages.map((lang) => (
+              <MenuItem
+                key={lang}
+                onClick={() => setLanguage(lang)}
+                borderRadius="lg"
+                bg="transparent"
+                _hover={{ bg: itemHover }}
+                _focus={{ bg: itemHover }}
+                fontSize="sm"
+                px={3}
+                py={2}
+              >
+                <Flex align="center" justify="space-between" w="full">
+                  <Text>{lang}</Text>
+                  {language === lang && <CheckIcon boxSize={3} color={activeColor} />}
+                </Flex>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
       </Flex>
+
 
       {error && (
         <Alert status="error" borderRadius="xl" mt={4}>
