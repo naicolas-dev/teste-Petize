@@ -8,7 +8,7 @@ import {
   HStack,
   Tooltip,
 } from '@chakra-ui/react';
-import { StarIcon, TimeIcon } from '@chakra-ui/icons';
+import { StarIcon } from '@chakra-ui/icons';
 import { GoRepoForked } from 'react-icons/go';
 import { VscCircleFilled } from 'react-icons/vsc';
 
@@ -38,48 +38,15 @@ const LANGUAGE_COLORS = {
 };
 
 /**
- * Formats ISO date string into a relative "updated X ago" or absolute label.
- */
-function formatUpdatedAt(isoString, t, i18n) {
-  if (!isoString) return null;
-
-  const date = new Date(isoString);
-  const now = new Date();
-  const diffMs = now - date;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
-
-  const locale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
-  const absolute = date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
-
-  let relative;
-  if (diffDays === 0) {
-    relative = t('repo.updatedToday');
-  } else if (diffDays === 1) {
-    relative = t('repo.updatedYesterday');
-  } else if (diffDays < 30) {
-    relative = t('repo.updatedDaysAgo', { count: diffDays });
-  } else if (diffMonths < 12) {
-    relative = t('repo.updatedMonthsAgo', { count: diffMonths });
-  } else {
-    relative = t('repo.updatedYearsAgo', { count: diffYears });
-  }
-
-  return { relative, absolute };
-}
-
-/**
  * RepoCard — displays a single repository with name (link), description,
- * language badge, star count, fork count, and last updated date.
+ * language badge, star count, and fork count.
  *
  * @param {{ repo: import('../schemas/githubRepo.schema').GitHubRepo }} props
  */
 export function RepoCard({ repo }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const langColor = LANGUAGE_COLORS[repo.language] ?? '#8b949e';
-  const updated = formatUpdatedAt(repo.updated_at, t, i18n);
 
   return (
     <Box
@@ -93,8 +60,6 @@ export function RepoCard({ repo }) {
       bg="#FFFFFF"
       transition="all 0.2s cubic-bezier(.08,.52,.52,1)"
       boxShadow="sm"
-      display="flex"
-      flexDirection="column"
       _hover={{
         borderColor: '#8C959F',
         boxShadow: '0 8px 24px rgba(149, 157, 165, 0.2)',
@@ -112,7 +77,7 @@ export function RepoCard({ repo }) {
         _dark={{ color: '#58A6FF' }}
         _hover={{ textDecoration: 'underline' }}
         display="inline-block"
-        mb={repo.description ? 1.5 : 0}
+        mb={repo.description ? 2 : 0}
         wordBreak="break-word"
       >
         {repo.name}
@@ -125,53 +90,39 @@ export function RepoCard({ repo }) {
         </Text>
       )}
 
-      {/* Footer row: language · stars · forks · updated */}
-      <Flex mt="auto" justify="space-between" align="center" flexWrap="wrap" gap={2}>
-        <HStack spacing={4} flexWrap="wrap">
-          {repo.language && (
-            <HStack spacing={1}>
-              <VscCircleFilled color={langColor} size={14} />
-              <Text fontSize="xs" fontFamily="mono" color="gray.500">{repo.language}</Text>
-            </HStack>
-          )}
-
-          <Tooltip label={t('repo.stars')} placement="top" hasArrow>
-            <HStack spacing={1} cursor="default">
-              <StarIcon boxSize={3} color="yellow.500" />
-              <Text fontSize="sm" fontFamily="mono" color="gray.600" _dark={{ color: 'gray.400' }}>
-                {repo.stargazers_count.toLocaleString()}
-              </Text>
-            </HStack>
-          </Tooltip>
-
-          <Tooltip label={t('repo.forks')} placement="top" hasArrow>
-            <HStack spacing={1} cursor="default">
-              <GoRepoForked size={14} color="#718096" />
-              <Text fontSize="sm" fontFamily="mono" color="gray.600" _dark={{ color: 'gray.400' }}>
-                {repo.forks_count.toLocaleString()}
-              </Text>
-            </HStack>
-          </Tooltip>
-
-          {repo.archived && (
-            <Badge colorScheme="orange" variant="subtle" fontSize="2xs">
-              {t('repo.archived')}
-            </Badge>
-          )}
-        </HStack>
-
-        {/* Last updated */}
-        {updated && (
-          <Tooltip label={updated.absolute} placement="top" hasArrow>
-            <HStack spacing={1} cursor="default" flexShrink={0}>
-              <TimeIcon boxSize={3} color="gray.400" />
-              <Text fontSize="xs" color="gray.400" whiteSpace="nowrap">
-                {updated.relative}
-              </Text>
-            </HStack>
-          </Tooltip>
+      {/* Footer row: language · stars · forks */}
+      <HStack spacing={4} mt="auto" flexWrap="wrap">
+        {repo.language && (
+          <HStack spacing={1}>
+            <VscCircleFilled color={langColor} size={14} />
+            <Text fontSize="xs" fontFamily="mono" color="gray.500">{repo.language}</Text>
+          </HStack>
         )}
-      </Flex>
+
+        <Tooltip label={t('repo.stars')} placement="top" hasArrow>
+          <HStack spacing={1} cursor="default">
+            <StarIcon boxSize={3} color="yellow.500" />
+            <Text fontSize="sm" fontFamily="mono" color="gray.600" _dark={{ color: 'gray.400' }}>
+              {repo.stargazers_count.toLocaleString()}
+            </Text>
+          </HStack>
+        </Tooltip>
+
+        <Tooltip label={t('repo.forks')} placement="top" hasArrow>
+          <HStack spacing={1} cursor="default">
+            <GoRepoForked size={14} color="#718096" />
+            <Text fontSize="sm" fontFamily="mono" color="gray.600" _dark={{ color: 'gray.400' }}>
+              {repo.forks_count.toLocaleString()}
+            </Text>
+          </HStack>
+        </Tooltip>
+
+        {repo.archived && (
+          <Badge colorScheme="orange" variant="subtle" fontSize="2xs">
+            {t('repo.archived')}
+          </Badge>
+        )}
+      </HStack>
     </Box>
   );
 }

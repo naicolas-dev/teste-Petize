@@ -151,7 +151,7 @@ export function useGitHubRepos(username, sort = 'updated', direction = 'desc', f
   }, [catalogRepos]);
 
   const filteredRepos = useMemo(() => {
-    return catalogRepos.filter((repo) => {
+    const filtered = catalogRepos.filter((repo) => {
       const matchesName =
         !normalizedQuery ||
         repo.name.toLowerCase().includes(normalizedQuery) ||
@@ -160,7 +160,28 @@ export function useGitHubRepos(username, sort = 'updated', direction = 'desc', f
       const matchesLanguage = language === 'all' || repo.language === language;
       return matchesName && matchesLanguage;
     });
-  }, [catalogRepos, normalizedQuery, language]);
+
+    // Re-sort locally so the filtered view always reflects the selected sort,
+    // regardless of the order the catalog was fetched in.
+    const dir = direction === 'asc' ? 1 : -1;
+
+    return [...filtered].sort((a, b) => {
+      if (sort === 'full_name') {
+        return dir * a.full_name.localeCompare(b.full_name);
+      }
+
+      // Map sort key → repo field
+      const field =
+        sort === 'created' ? 'created_at' :
+        sort === 'pushed'  ? 'pushed_at'  :
+                             'updated_at';          // 'updated' or fallback
+
+      const aTime = a[field] ? new Date(a[field]).getTime() : 0;
+      const bTime = b[field] ? new Date(b[field]).getTime() : 0;
+      return dir * (aTime - bTime);
+    });
+  }, [catalogRepos, normalizedQuery, language, sort, direction]);
+
 
   const filteredVisibleRepos = useMemo(
     () => filteredRepos.slice(0, visibleFiltered),
