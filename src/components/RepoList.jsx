@@ -27,6 +27,8 @@ import { SortSelector } from './SortSelector';
 import { RepoCard } from './RepoCard';
 import { RepoSkeleton } from './LoadingSkeleton';
 
+import { ScrollArea } from './ScrollArea';
+
 /**
  * RepoList - full repo listing with sort controls and infinite scroll.
  */
@@ -86,22 +88,8 @@ export function RepoList({ username }) {
     boxShadow: menuShadow,
     borderRadius: 'xl',
     minW: '200px',
-    maxH: '300px',
-    overflowY: 'auto',
     p: 1,
     zIndex: 'popover',
-    // Custom Scrollbar for better UI
-    sx: {
-      '&::-webkit-scrollbar': { width: '4px' },
-      '&::-webkit-scrollbar-track': { background: 'transparent' },
-      '&::-webkit-scrollbar-thumb': { 
-        background: useColorModeValue('#D0D7DE', '#30363D'), 
-        borderRadius: '4px' 
-      },
-      '&::-webkit-scrollbar-thumb:hover': { 
-        background: useColorModeValue('#8C959F', '#484F58') 
-      },
-    },
   };
 
   const currentLanguageLabel = language === 'all' ? t('filters.languageAll') : language;
@@ -144,25 +132,9 @@ export function RepoList({ username }) {
             <Text noOfLines={1}>{currentLanguageLabel}</Text>
           </MenuButton>
           <MenuList {...menuListStyles}>
-            <MenuItem
-              onClick={() => setLanguage('all')}
-              borderRadius="lg"
-              bg="transparent"
-              _hover={{ bg: itemHover }}
-              _focus={{ bg: itemHover }}
-              fontSize="sm"
-              px={3}
-              py={2}
-            >
-              <Flex align="center" justify="space-between" w="full">
-                <Text>{t('filters.languageAll')}</Text>
-                {language === 'all' && <CheckIcon boxSize={3} color={activeColor} />}
-              </Flex>
-            </MenuItem>
-            {languages.map((lang) => (
+            <ScrollArea maxH="300px">
               <MenuItem
-                key={lang}
-                onClick={() => setLanguage(lang)}
+                onClick={() => setLanguage('all')}
                 borderRadius="lg"
                 bg="transparent"
                 _hover={{ bg: itemHover }}
@@ -172,11 +144,29 @@ export function RepoList({ username }) {
                 py={2}
               >
                 <Flex align="center" justify="space-between" w="full">
-                  <Text>{lang}</Text>
-                  {language === lang && <CheckIcon boxSize={3} color={activeColor} />}
+                  <Text>{t('filters.languageAll')}</Text>
+                  {language === 'all' && <CheckIcon boxSize={3} color={activeColor} />}
                 </Flex>
               </MenuItem>
-            ))}
+              {languages.map((lang) => (
+                <MenuItem
+                  key={lang}
+                  onClick={() => setLanguage(lang)}
+                  borderRadius="lg"
+                  bg="transparent"
+                  _hover={{ bg: itemHover }}
+                  _focus={{ bg: itemHover }}
+                  fontSize="sm"
+                  px={3}
+                  py={2}
+                >
+                  <Flex align="center" justify="space-between" w="full">
+                    <Text>{lang}</Text>
+                    {language === lang && <CheckIcon boxSize={3} color={activeColor} />}
+                  </Flex>
+                </MenuItem>
+              ))}
+            </ScrollArea>
           </MenuList>
         </Menu>
       </Flex>
