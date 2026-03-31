@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -32,6 +32,8 @@ export function SearchBar({
   onQueryChange,
   showHint = true,
   compactMobile = false,
+  hideButton = false,
+  inputSize = 'lg',
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -76,8 +78,9 @@ export function SearchBar({
       <Flex
         gap={3}
         direction={compactMobile ? 'row' : { base: 'column', sm: 'row' }}
+        align="center"
       >
-        <InputGroup size="lg" flex={1}>
+        <InputGroup size={inputSize} flex={1}>
           <InputLeftElement
             pointerEvents="none"
             display={compactMobile ? { base: 'none', md: 'flex' } : 'flex'}
@@ -87,7 +90,7 @@ export function SearchBar({
           <Input
             id="search-username-input"
             variant="outline"
-            size="lg"
+            size={inputSize}
             placeholder={t('home.searchPlaceholder')}
             value={query}
             pl={compactMobile ? { base: 4, md: 10 } : undefined}
@@ -96,15 +99,19 @@ export function SearchBar({
               setQuery(e.target.value);
               onQueryChange?.(e.target.value);
             }}
-            fontSize="md"
+            fontSize={inputSize === 'sm' ? 'sm' : 'md'}
             aria-label={t('home.searchInputAria')}
             autoComplete="off"
+            _focus={{
+              borderColor: 'blue.400',
+              boxShadow: '0 0 0 1px var(--chakra-colors-blue-400)',
+            }}
           />
 
           {compactMobile && (
             <InputRightElement
               h="100%"
-              w="3rem"
+              w={inputSize === 'sm' ? '2rem' : '3rem'}
               display={{ base: 'flex', md: 'none' }}
             >
               <IconButton
@@ -112,7 +119,7 @@ export function SearchBar({
                 type="submit"
                 aria-label={t('home.searchButtonAria')}
                 icon={<SearchIcon />}
-                size="sm"
+                size="xs"
                 variant="ghost"
                 isLoading={isSubmitting}
                 color="gray.500"
@@ -127,21 +134,23 @@ export function SearchBar({
           )}
         </InputGroup>
 
-        <Button
-          id="search-submit-button"
-          type="submit"
-          variant="solid"
-          size="lg"
-          px={8}
-          fontWeight="semibold"
-          flexShrink={0}
-          isLoading={isSubmitting}
-          loadingText={t('home.searchLoading')}
-          aria-label={t('home.searchButtonAria')}
-          display={compactMobile ? { base: 'none', md: 'inline-flex' } : undefined}
-        >
-          {t('home.searchButton')}
-        </Button>
+        {!hideButton && (
+          <Button
+            id="search-submit-button"
+            type="submit"
+            variant="solid"
+            size={inputSize}
+            px={8}
+            fontWeight="semibold"
+            flexShrink={0}
+            isLoading={isSubmitting}
+            loadingText={t('home.searchLoading')}
+            aria-label={t('home.searchButtonAria')}
+            display={compactMobile ? { base: 'none', md: 'inline-flex' } : undefined}
+          >
+            {t('home.searchButton')}
+          </Button>
+        )}
       </Flex>
 
       {showHint && (

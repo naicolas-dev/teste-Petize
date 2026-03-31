@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -205,7 +205,7 @@ export function ProfilePage() {
     suggestions.state !== 'invalid';
 
   const renderSearchArea = (compactMobile) => (
-    <Box flex={1} w={{ base: '100%', md: 'auto' }}>
+    <Box w={{ base: '100%', md: 'auto' }} maxW={{ md: '400px' }} position="relative">
       <SearchBar
         initialValue={username}
         onError={() => setSearchError('empty')}
@@ -213,6 +213,8 @@ export function ProfilePage() {
         onQueryChange={handleQueryChange}
         showHint={false}
         compactMobile={compactMobile}
+        hideButton={true}
+        inputSize="sm"
       />
 
       {searchError && (
@@ -405,26 +407,38 @@ export function ProfilePage() {
             </Box>
           </Box>
 
-          <Flex align="center" gap={4} py={3} display={{ base: 'none', md: 'flex' }}>
-            <Button
-              as={RouterLink}
-              to="/"
-              variant="ghost"
-              size="sm"
-              leftIcon={<ArrowBackIcon />}
-              color="gray.600"
-              _dark={{ color: 'gray.300' }}
-              _hover={{ bg: 'gray.100', color: '#191919', _dark: { bg: 'gray.800', color: '#DEDEDE' } }}
-              flexShrink={0}
-            >
-              {t('common.back')}
-            </Button>
+          <Grid
+            templateColumns="1fr auto 1fr"
+            alignItems="center"
+            py={3}
+            display={{ base: 'none', md: 'grid' }}
+          >
+            <Flex align="center" gap={4}>
+              <Button
+                as={RouterLink}
+                to="/"
+                variant="ghost"
+                size="sm"
+                leftIcon={<ArrowBackIcon />}
+                color="gray.600"
+                _dark={{ color: 'gray.300' }}
+                _hover={{ bg: 'gray.100', color: '#191919', _dark: { bg: 'gray.800', color: '#DEDEDE' } }}
+                flexShrink={0}
+              >
+                {t('common.back')}
+              </Button>
+              <Divider orientation="vertical" h="24px" />
+            </Flex>
 
-            <Divider orientation="vertical" h="24px" />
-            {renderSearchArea(false)}
-            <Divider orientation="vertical" h="24px" />
-            <SettingsControls />
-          </Flex>
+            <Box w={{ md: '400px' }} mx="auto">
+              {renderSearchArea(false)}
+            </Box>
+
+            <Flex align="center" justify="flex-end" gap={4}>
+              <Divider orientation="vertical" h="24px" />
+              <SettingsControls />
+            </Flex>
+          </Grid>
         </Container>
       </Box>
 
