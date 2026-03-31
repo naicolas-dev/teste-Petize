@@ -15,7 +15,9 @@
     "languageMenuAria": "Select language",
     "themeMenuAria": "Select theme",
     "languageCodePt": "pt-BR",
-    "languageCodeEn": "en-US"
+    "languageCodeEn": "en-US",
+    "title": "Settings",
+    "openMenuAria": "Open settings"
   },
   "common": {
     "back": "Back",
@@ -51,6 +53,7 @@
     "following": "Following",
     "publicRepos": "Public Repos",
     "repos": "Repos",
+    "openSearchAria": "Open search bar",
     "website": "Website",
     "twitter": "Twitter / X",
     "noRepos": "This user has no public repositories.",

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -20,8 +20,14 @@ import {
   Spinner,
   Avatar,
   VStack,
+  IconButton,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverBody,
 } from '@chakra-ui/react';
-import { ArrowBackIcon, SearchIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, SearchIcon, SettingsIcon } from '@chakra-ui/icons';
 import { useGitHubUser } from '../hooks/useGitHubUser';
 import { UserCard } from '../components/UserCard';
 import { RepoList } from '../components/RepoList';
@@ -32,7 +38,7 @@ import { fetchGitHubUser } from '../services/github.service';
 import { useGitHubUserSuggestions } from '../hooks/useGitHubUserSuggestions';
 
 /**
- * ProfilePage — shows a GitHub user's profile and their repositories.
+ * ProfilePage - shows a GitHub user's profile and their repositories.
  * URL: /profile/:username
  */
 export function ProfilePage() {
@@ -40,8 +46,12 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, loading, error } = useGitHubUser(username);
+
   const [searchError, setSearchError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(username ?? '');
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(true);
+  const manualRevealUntilRef = useRef(0);
+  const lastScrollYRef = useRef(0);
 
   const normalizedUsername = useMemo(
     () => String(username ?? '').trim().toLowerCase(),
@@ -51,12 +61,47 @@ export function ProfilePage() {
     () => searchQuery.trim().toLowerCase(),
     [searchQuery]
   );
+
   const isTypeaheadActive = useMemo(
     () => normalizedSearchQuery.length > 0 && normalizedSearchQuery !== normalizedUsername,
     [normalizedSearchQuery, normalizedUsername]
   );
 
   const suggestions = useGitHubUserSuggestions(searchQuery);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const isMobile = window.matchMedia('(max-width: 47.99em)').matches;
+      if (!isMobile) return;
+
+      const currentY = window.scrollY || 0;
+      const delta = Math.abs(currentY - lastScrollYRef.current);
+      lastScrollYRef.current = currentY;
+
+      if (currentY <= 0) return;
+      if (delta < 2) return;
+
+      if (Date.now() < manualRevealUntilRef.current) {
+        return;
+      }
+
+      setIsMobileSearchVisible((prevVisible) => (prevVisible ? false : prevVisible));
+
+      if (document.activeElement instanceof HTMLInputElement) {
+        document.activeElement.blur();
+      }
+    };
+
+    lastScrollYRef.current = window.scrollY || 0;
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const revealMobileSearch = () => {
+    manualRevealUntilRef.current = Date.now() + 1200;
+    lastScrollYRef.current = window.scrollY || 0;
+    setIsMobileSearchVisible(true);
+  };
 
   const openProfile = (nextUsername) => {
     navigate(`/profile/${encodeURIComponent(nextUsername)}`);
@@ -159,10 +204,135 @@ export function ProfilePage() {
     normalizedSearchQuery.length < suggestions.minQueryLength &&
     suggestions.state !== 'invalid';
 
+  const renderSearchArea = (compactMobile) => (
+    <Box flex={1} w={{ base: '100%', md: 'auto' }}>
+      <SearchBar
+        initialValue={username}
+        onError={() => setSearchError('empty')}
+        onSearch={handleSearch}
+        onQueryChange={handleQueryChange}
+        showHint={false}
+        compactMobile={compactMobile}
+      />
+
+      {searchError && (
+        <Alert
+          status={searchAlertStatus}
+          borderRadius="md"
+          mt={2}
+          fontSize="sm"
+          onMouseLeave={() => setSearchError(null)}
+        >
+          <AlertIcon />
+          {getSearchAlertText()}
+        </Alert>
+      )}
+
+      {showSuggestionsLoading && (
+        <HStack spacing={2} mt={2} color="gray.500" fontSize="sm" align="center">
+          <Spinner size="xs" />
+          <Text>{t('home.suggestionsLoading')}</Text>
+        </HStack>
+      )}
+
+      {showMinCharactersHint && (
+        <Text mt={2} color="gray.500" fontSize="sm">
+          {t('home.suggestionsMinChars', {
+            count: suggestions.minQueryLength,
+          })}
+        </Text>
+      )}
+
+      {showSuggestionsInvalidInline && (
+        <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
+          <AlertIcon />
+          {t('home.invalidUsername')}
+        </Alert>
+      )}
+
+      {showSuggestionsEmptyInline && (
+        <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
+          <AlertIcon />
+          {t('home.noSimilarUsers')}
+        </Alert>
+      )}
+
+      {showSuggestionsRateLimitInline && (
+        <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
+          <AlertIcon />
+          {t('error.rateLimitedDesc')}
+        </Alert>
+      )}
+
+      {showSuggestionsErrorInline && (
+        <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
+          <AlertIcon />
+          {t('error.generic')}
+        </Alert>
+      )}
+
+      {showSuggestionsList && (
+        <Box
+          mt={2}
+          p={3}
+          border="1px solid"
+          borderColor="#D0D7DE"
+          borderRadius="xl"
+          bg="#FFFFFF"
+          _dark={{ bg: '#161B22', borderColor: '#30363D' }}
+        >
+          <Text
+            fontSize="xs"
+            color="gray.500"
+            mb={2}
+            textTransform="uppercase"
+            letterSpacing="wide"
+            fontWeight="semibold"
+          >
+            {t('home.suggestionsTitle')}
+          </Text>
+
+          <VStack spacing={1} align="stretch">
+            {visibleSuggestions.map((suggestedUser) => (
+              <Button
+                key={suggestedUser.id}
+                variant="ghost"
+                justifyContent="flex-start"
+                px={2}
+                py={2}
+                h="auto"
+                onClick={() => openProfile(suggestedUser.login)}
+                aria-label={t('home.suggestionOpenAria', {
+                  username: suggestedUser.login,
+                })}
+              >
+                <HStack spacing={3} minW={0} w="100%">
+                  <Avatar
+                    size="xs"
+                    src={suggestedUser.avatar_url}
+                    name={suggestedUser.login}
+                  />
+                  <Box minW={0}>
+                    <Text
+                      fontWeight="semibold"
+                      color="#1F2328"
+                      _dark={{ color: '#E6EDF3' }}
+                      noOfLines={1}
+                    >
+                      @{suggestedUser.login}
+                    </Text>
+                  </Box>
+                </HStack>
+              </Button>
+            ))}
+          </VStack>
+        </Box>
+      )}
+    </Box>
+  );
+
   return (
     <Box minH="100vh">
-
-      {/* ── Top navigation bar ────────────────────────────────────── */}
       <Box
         bg="rgba(255, 255, 255, 0.8)"
         backdropFilter="blur(12px)"
@@ -174,12 +344,68 @@ export function ProfilePage() {
         zIndex={100}
       >
         <Container maxW="6xl">
-          <Flex
-            align="center"
-            gap={4}
-            py={3}
-            direction={{ base: 'column', md: 'row' }}
-          >
+          <Box display={{ base: 'block', md: 'none' }} py={3}>
+            <Flex align="center" justify="space-between" mb={3}>
+              <Button
+                as={RouterLink}
+                to="/"
+                variant="ghost"
+                size="sm"
+                leftIcon={<ArrowBackIcon />}
+                color="gray.600"
+                _dark={{ color: 'gray.300' }}
+                _hover={{ bg: 'gray.100', color: '#191919', _dark: { bg: 'gray.800', color: '#DEDEDE' } }}
+              >
+                {t('common.back')}
+              </Button>
+
+              <HStack spacing={2}>
+                <IconButton
+                  icon={<SearchIcon />}
+                  aria-label={t('profile.openSearchAria')}
+                  variant="ghost"
+                  size="sm"
+                  onClick={revealMobileSearch}
+                  display={isMobileSearchVisible ? 'none' : 'flex'}
+                />
+
+                <Popover placement="bottom-end" isLazy>
+                  <PopoverTrigger>
+                    <IconButton
+                      icon={<SettingsIcon />}
+                      aria-label={t('settings.openMenuAria')}
+                      variant="ghost"
+                      size="sm"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    w="auto"
+                    minW="0"
+                    borderRadius="xl"
+                    borderColor="#D0D7DE"
+                    _dark={{ bg: '#161B22', borderColor: '#30363D' }}
+                  >
+                    <PopoverArrow />
+                    <PopoverBody p={2}>
+                      <SettingsControls />
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </HStack>
+            </Flex>
+
+            <Box
+              maxH={isMobileSearchVisible ? '560px' : '0px'}
+              opacity={isMobileSearchVisible ? 1 : 0}
+              overflow="hidden"
+              pointerEvents={isMobileSearchVisible ? 'auto' : 'none'}
+              transition="max-height 0.24s ease, opacity 0.2s ease"
+            >
+              {renderSearchArea(true)}
+            </Box>
+          </Box>
+
+          <Flex align="center" gap={4} py={3} display={{ base: 'none', md: 'flex' }}>
             <Button
               as={RouterLink}
               to="/"
@@ -194,152 +420,21 @@ export function ProfilePage() {
               {t('common.back')}
             </Button>
 
-            <Divider orientation="vertical" h="24px" display={{ base: 'none', md: 'block' }} />
-
-            <Box flex={1} w={{ base: '100%', md: 'auto' }}>
-              <SearchBar
-                initialValue={username}
-                onError={() => setSearchError('empty')}
-                onSearch={handleSearch}
-                onQueryChange={handleQueryChange}
-                showHint={false}
-              />
-
-              {searchError && (
-                <Alert
-                  status={searchAlertStatus}
-                  borderRadius="md"
-                  mt={2}
-                  fontSize="sm"
-                  onMouseLeave={() => setSearchError(null)}
-                >
-                  <AlertIcon />
-                  {getSearchAlertText()}
-                </Alert>
-              )}
-
-              {showSuggestionsLoading && (
-                <HStack spacing={2} mt={2} color="gray.500" fontSize="sm" align="center">
-                  <Spinner size="xs" />
-                  <Text>{t('home.suggestionsLoading')}</Text>
-                </HStack>
-              )}
-
-              {showMinCharactersHint && (
-                <Text mt={2} color="gray.500" fontSize="sm">
-                  {t('home.suggestionsMinChars', {
-                    count: suggestions.minQueryLength,
-                  })}
-                </Text>
-              )}
-
-              {showSuggestionsInvalidInline && (
-                <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
-                  <AlertIcon />
-                  {t('home.invalidUsername')}
-                </Alert>
-              )}
-
-              {showSuggestionsEmptyInline && (
-                <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
-                  <AlertIcon />
-                  {t('home.noSimilarUsers')}
-                </Alert>
-              )}
-
-              {showSuggestionsRateLimitInline && (
-                <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
-                  <AlertIcon />
-                  {t('error.rateLimitedDesc')}
-                </Alert>
-              )}
-
-              {showSuggestionsErrorInline && (
-                <Alert status="warning" borderRadius="md" mt={2} fontSize="sm">
-                  <AlertIcon />
-                  {t('error.generic')}
-                </Alert>
-              )}
-
-              {showSuggestionsList && (
-                <Box
-                  mt={2}
-                  p={3}
-                  border="1px solid"
-                  borderColor="#D0D7DE"
-                  borderRadius="xl"
-                  bg="#FFFFFF"
-                  _dark={{ bg: '#161B22', borderColor: '#30363D' }}
-                >
-                  <Text
-                    fontSize="xs"
-                    color="gray.500"
-                    mb={2}
-                    textTransform="uppercase"
-                    letterSpacing="wide"
-                    fontWeight="semibold"
-                  >
-                    {t('home.suggestionsTitle')}
-                  </Text>
-
-                  <VStack spacing={1} align="stretch">
-                    {visibleSuggestions.map((suggestedUser) => (
-                      <Button
-                        key={suggestedUser.id}
-                        variant="ghost"
-                        justifyContent="flex-start"
-                        px={2}
-                        py={2}
-                        h="auto"
-                        onClick={() => openProfile(suggestedUser.login)}
-                        aria-label={t('home.suggestionOpenAria', {
-                          username: suggestedUser.login,
-                        })}
-                      >
-                        <HStack spacing={3} minW={0} w="100%">
-                          <Avatar
-                            size="xs"
-                            src={suggestedUser.avatar_url}
-                            name={suggestedUser.login}
-                          />
-                          <Box minW={0}>
-                            <Text
-                              fontWeight="semibold"
-                              color="#1F2328"
-                              _dark={{ color: '#E6EDF3' }}
-                              noOfLines={1}
-                            >
-                              @{suggestedUser.login}
-                            </Text>
-                            <Text fontSize="xs" color="gray.500" noOfLines={1}>
-                              {suggestedUser.type}
-                            </Text>
-                          </Box>
-                        </HStack>
-                      </Button>
-                    ))}
-                  </VStack>
-                </Box>
-              )}
-            </Box>
-
-            <Divider orientation="vertical" h="24px" display={{ base: 'none', md: 'block' }} />
+            <Divider orientation="vertical" h="24px" />
+            {renderSearchArea(false)}
+            <Divider orientation="vertical" h="24px" />
             <SettingsControls />
           </Flex>
         </Container>
       </Box>
 
-      {/* ── Main content ──────────────────────────────────────────── */}
       <Container maxW="6xl" py={{ base: 6, md: 8 }} px={{ base: 4, md: 6 }}>
-
-        {/* Loading Skeleton */}
         {loading && <PageSkeleton />}
 
-        {/* Error: user not found */}
         {!loading && error?.status === 404 && (
           <Center py={16}>
             <Box textAlign="center" maxW="sm">
-              <Text fontSize="5xl" mb={4}>🔍</Text>
+              <SearchIcon boxSize={8} color="gray.400" mb={4} />
               <Heading size="md" color="gray.700" mb={2}>{t('error.userNotFound')}</Heading>
               <Text color="gray.400" mb={6} fontSize="sm">
                 {t('error.userNotFoundDesc', { username })}
@@ -357,7 +452,6 @@ export function ProfilePage() {
           </Center>
         )}
 
-        {/* Error: rate limit */}
         {!loading && error?.status === 403 && (
           <Alert status="warning" borderRadius="xl">
             <AlertIcon />
@@ -366,7 +460,6 @@ export function ProfilePage() {
           </Alert>
         )}
 
-        {/* Generic error */}
         {!loading && error && error.status !== 404 && error.status !== 403 && (
           <Alert status="error" borderRadius="xl">
             <AlertIcon />
@@ -375,21 +468,18 @@ export function ProfilePage() {
           </Alert>
         )}
 
-        {/* ── Loaded user ──────────────────────────────────────────── */}
         {!loading && user && (
           <Grid
             templateColumns={{ base: '1fr', md: '300px 1fr' }}
             gap={{ base: 6, md: 8 }}
             alignItems="start"
           >
-            {/* Left sidebar — user card */}
             <GridItem>
               <Box position={{ md: 'sticky' }} top={{ md: '80px' }}>
                 <UserCard user={user} />
               </Box>
             </GridItem>
 
-            {/* Right main — repo list */}
             <GridItem>
               <HStack mb={4}>
                 <Heading size="sm" color="gray.700" _dark={{ color: 'gray.300' }}>
@@ -404,6 +494,7 @@ export function ProfilePage() {
           </Grid>
         )}
       </Container>
+
     </Box>
   );
 }

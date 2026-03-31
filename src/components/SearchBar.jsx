@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -7,7 +7,9 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  InputRightElement,
   Button,
+  IconButton,
   Text,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
@@ -21,6 +23,7 @@ import { SearchIcon } from '@chakra-ui/icons';
  *   onSearch     {function} optional async callback receiving trimmed query
  *   onQueryChange {function} optional callback receiving the raw input value
  *   showHint     {boolean}  controls hint visibility
+ *   compactMobile {boolean} renders icon-submit inside the input on mobile
  */
 export function SearchBar({
   initialValue = '',
@@ -28,6 +31,7 @@ export function SearchBar({
   onSearch,
   onQueryChange,
   showHint = true,
+  compactMobile = false,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -69,9 +73,15 @@ export function SearchBar({
 
   return (
     <Box as="form" onSubmit={handleSubmit} w="100%">
-      <Flex gap={3} direction={{ base: 'column', sm: 'row' }}>
+      <Flex
+        gap={3}
+        direction={compactMobile ? 'row' : { base: 'column', sm: 'row' }}
+      >
         <InputGroup size="lg" flex={1}>
-          <InputLeftElement pointerEvents="none">
+          <InputLeftElement
+            pointerEvents="none"
+            display={compactMobile ? { base: 'none', md: 'flex' } : 'flex'}
+          >
             <SearchIcon color="gray.400" />
           </InputLeftElement>
           <Input
@@ -80,6 +90,8 @@ export function SearchBar({
             size="lg"
             placeholder={t('home.searchPlaceholder')}
             value={query}
+            pl={compactMobile ? { base: 4, md: 10 } : undefined}
+            pr={compactMobile ? { base: 12, md: 4 } : undefined}
             onChange={(e) => {
               setQuery(e.target.value);
               onQueryChange?.(e.target.value);
@@ -88,6 +100,31 @@ export function SearchBar({
             aria-label={t('home.searchInputAria')}
             autoComplete="off"
           />
+
+          {compactMobile && (
+            <InputRightElement
+              h="100%"
+              w="3rem"
+              display={{ base: 'flex', md: 'none' }}
+            >
+              <IconButton
+                id="search-submit-icon-button"
+                type="submit"
+                aria-label={t('home.searchButtonAria')}
+                icon={<SearchIcon />}
+                size="sm"
+                variant="ghost"
+                isLoading={isSubmitting}
+                color="gray.500"
+                _hover={{ bg: 'transparent', color: 'gray.700' }}
+                _active={{ bg: 'transparent' }}
+                _dark={{
+                  color: 'gray.300',
+                  _hover: { bg: 'transparent', color: 'gray.100' },
+                }}
+              />
+            </InputRightElement>
+          )}
         </InputGroup>
 
         <Button
@@ -101,6 +138,7 @@ export function SearchBar({
           isLoading={isSubmitting}
           loadingText={t('home.searchLoading')}
           aria-label={t('home.searchButtonAria')}
+          display={compactMobile ? { base: 'none', md: 'inline-flex' } : undefined}
         >
           {t('home.searchButton')}
         </Button>
