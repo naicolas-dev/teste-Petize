@@ -12,6 +12,27 @@ const theme = extendTheme({
       body: {
         bg: props.colorMode === 'dark' ? '#0D1117' : '#F6F8FA',
         color: props.colorMode === 'dark' ? '#E6EDF3' : '#1F2328',
+      },
+      // Global Scrollbar Styling
+      '::-webkit-scrollbar': {
+        width: '10px',
+      },
+      '::-webkit-scrollbar-track': {
+        background: 'transparent',
+      },
+      '::-webkit-scrollbar-thumb': {
+        background: props.colorMode === 'dark' ? '#30363D' : '#D0D7DE',
+        borderRadius: '10px',
+        border: '2px solid transparent',
+        backgroundClip: 'content-box',
+      },
+      '::-webkit-scrollbar-thumb:hover': {
+        background: props.colorMode === 'dark' ? '#484F58' : '#8C959F',
+      },
+      // Firefox Support
+      html: {
+        scrollbarWidth: 'thin',
+        scrollbarColor: `${props.colorMode === 'dark' ? '#30363D' : '#D0D7DE'} transparent`,
       }
     })
   },
