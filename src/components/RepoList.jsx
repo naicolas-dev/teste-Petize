@@ -32,7 +32,7 @@ export function RepoList({ username }) {
   const { t } = useTranslation();
 
   // Existing sort state remains unchanged.
-  const [sort, setSort] = useState('updated');
+  const [sort, setSort] = useState('pushed');
   const [direction, setDirection] = useState('desc');
 
   // New filters.

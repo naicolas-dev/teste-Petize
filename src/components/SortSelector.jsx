@@ -10,9 +10,8 @@ import {
 
 /** Sort field options as expected by the GitHub API */
 const SORT_OPTIONS = [
-  { value: 'updated',   labelKey: 'sort.updated'   },
-  { value: 'created',   labelKey: 'sort.created'   },
   { value: 'pushed',    labelKey: 'sort.pushed'     },
+  { value: 'created',   labelKey: 'sort.created'   },
   { value: 'full_name', labelKey: 'sort.full_name'  },
 ];
 

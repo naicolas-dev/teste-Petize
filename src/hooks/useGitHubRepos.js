@@ -28,7 +28,7 @@ function mergeUniqueRepos(previousRepos, nextRepos) {
  * @param {{ query?: string, language?: string }} [filters]
  * @returns {{ repos, languages, loading, hasMore, error, loadMore }}
  */
-export function useGitHubRepos(username, sort = 'updated', direction = 'desc', filters = {}) {
+export function useGitHubRepos(username, sort = 'pushed', direction = 'desc', filters = {}) {
   const { query = '', language = 'all' } = filters;
   const normalizedQuery = query.trim().toLowerCase();
   const hasActiveFilters = normalizedQuery.length > 0 || language !== 'all';
