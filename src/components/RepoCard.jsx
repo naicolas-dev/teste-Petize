@@ -11,6 +11,7 @@ import {
 import { StarIcon } from '@chakra-ui/icons';
 import { GoRepoForked } from 'react-icons/go';
 import { VscCircleFilled } from 'react-icons/vsc';
+import { formatRelativeDate } from '../utils/dateUtils';
 
 /**
  * Colour map for the most common programming languages.
@@ -122,6 +123,10 @@ export function RepoCard({ repo }) {
             {t('repo.archived')}
           </Badge>
         )}
+
+        <Text fontSize="xs" color="gray.500" _dark={{ color: 'gray.400' }} ml="auto">
+          {formatRelativeDate(repo.pushed_at, t)}
+        </Text>
       </HStack>
     </Box>
   );

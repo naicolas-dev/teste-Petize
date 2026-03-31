@@ -1,4 +1,4 @@
-﻿{
+{
   "app": {
     "title": "GitHub Explorer"
   },
@@ -72,9 +72,8 @@
   "sort": {
     "label": "Sort by",
     "direction": "Order",
-    "updated": "Last updated",
+    "pushed": "Last updated",
     "created": "Created",
-    "pushed": "Push",
     "full_name": "Name",
     "date_asc": "Oldest",
     "date_desc": "Newest",
@@ -87,11 +86,19 @@
     "stars": "Stars",
     "forks": "Forks",
     "archived": "Archived",
-    "updatedToday": "Updated today",
-    "updatedYesterday": "Updated yesterday",
-    "updatedDaysAgo": "Updated {{count}} days ago",
-    "updatedMonthsAgo": "Updated {{count}} month ago",
-    "updatedYearsAgo": "Updated {{count}} year ago"
+    "updatedJustNow": "Just updated",
+    "updatedMinutesAgo_one": "Updated {{count}} minute ago",
+    "updatedMinutesAgo_other": "Updated {{count}} minutes ago",
+    "updatedHoursAgo_one": "Updated {{count}} hour ago",
+    "updatedHoursAgo_other": "Updated {{count}} hours ago",
+    "updatedDaysAgo_one": "Updated {{count}} day ago",
+    "updatedDaysAgo_other": "Updated {{count}} days ago",
+    "updatedWeeksAgo_one": "Updated {{count}} week ago",
+    "updatedWeeksAgo_other": "Updated {{count}} weeks ago",
+    "updatedMonthsAgo_one": "Updated {{count}} month ago",
+    "updatedMonthsAgo_other": "Updated {{count}} months ago",
+    "updatedYearsAgo_one": "Updated {{count}} year ago",
+    "updatedYearsAgo_other": "Updated {{count}} years ago"
   },
   "error": {
     "userNotFound": "User not found",
